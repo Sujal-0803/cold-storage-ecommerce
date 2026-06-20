@@ -1,4 +1,4 @@
-# 🌿 Fresh & Organic Cold Storage
+# 🌿 Cold Storage E-Commerce Website
 
 A full-stack e-commerce web app for a fictional cold-storage organic produce brand — built as a personal portfolio project to demonstrate front-end UI craft, Firebase integration, and a complete shopping flow from browsing to checkout to order tracking.
 
@@ -107,10 +107,6 @@ Open `index.html` directly in a browser, or serve it locally for best results (E
 
 ```
 
-Then visit `http://localhost:5500`.
-
----
-
 ## 🙋 About the Developer
 
 Built by **Sujal Maru** — a fresher developer based in Pune, Maharashtra, as a personal portfolio project to practice full-stack-feeling web development using Firebase as a backend-as-a-service.
@@ -121,12 +117,9 @@ Built by **Sujal Maru** — a fresher developer based in Pune, Maharashtra, as a
 
 ---
 
-## ⚠️ Disclaimer
-
-This is a fictional brand built solely for portfolio/demonstration purposes. All products, pricing, and business details are not real.
-
----
-
 ## 📄 License
 
 This project is open source and available for learning purposes. Feel free to fork and adapt it for your own portfolio.
+
+
+| 🚀 Built With ❤️ By Sujal Maru | Cold Storage E-Commerce Website 2026
