@@ -137,4 +137,4 @@ This project is open source and available for learning purposes. Feel free to fo
 
 ---
 
-| 🚀 Built With ❤️ By Sujal Maru | Cold Storage E-Commerce Website 2026
+🚀 Built With ❤️ By Sujal Maru | Cold Storage E-Commerce Website 2026
