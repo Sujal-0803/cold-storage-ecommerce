@@ -37,7 +37,7 @@ This project was built to practice and showcase:
 
 | Layer | Technology |
 |---|---|
-| Frontend | HTML5, CSS3, Bootstrap 5, JavaScript E56 |
+| Frontend | HTML5, CSS3, Bootstrap 5, JavaScript ES6 |
 | Authentication | Firebase Authentication (Email/Password, Google OAuth) |
 | Database | Cloud Firestore |
 | Development Tools | VS Code, Git & GitHub |
@@ -60,7 +60,7 @@ Cold-Storage-Ecommerce
 │   └── navbar.js                               # Shared navbar component + auth state
 │
 ├── index.html                                  # Home page
-├── about.html                                  # About page         
+├── about.html                                  # About page
 ├── feature.html                                # Features/why-choose-us page
 ├── products.html                               # Product listing with filters/search
 ├── product.html                                # Single product detail page
@@ -114,24 +114,29 @@ cd cold-storage-ecommerce
 
 Open `index.html` directly in a browser, or serve it locally for best results (ES module imports require a server context in some browsers):
 
+```bash
+# Using HTML
+HTML5 -m http.server 5500
 ```
 
 Then visit `http://localhost:5500`.
- 
+
 ---
- 
+
 ## 🙋 About the Developer
- 
+
 Built by **Sujal Maru** — a fresher developer based in Pune, Maharashtra, as a personal portfolio project to practice full-stack-feeling web development using Firebase as a backend-as-a-service.
- 
+
 - 🔗 GitHub: [@Sujal-0803](https://github.com/Sujal-0803)
 - 💼 LinkedIn: [sujalmaru0803](https://www.linkedin.com/in/sujalmaru0803)
 - 📧 Email: sujalmaru2004@gmail.com
+
 ---
 
 ## 📄 License
 
 This project is open source and available for learning purposes. Feel free to fork and adapt it for your own portfolio.
 
+---
 
-| 🚀 Built With ❤️ By Sujal Maru | Cold Storage E-Commerce Website 2026
+🚀 Built With ❤️ By Sujal Maru | Cold Storage E-Commerce Website 2026
