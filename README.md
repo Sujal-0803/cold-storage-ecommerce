@@ -116,10 +116,8 @@ Open `index.html` directly in a browser, or serve it locally for best results (E
 
 ```bash
 # Using HTML
-HTML5 -m http.server 5500
+http://localhost:5500
 ```
-
-Then visit `http://localhost:5500`.
 
 ---
 
