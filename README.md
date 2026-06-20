@@ -127,7 +127,7 @@ Then visit `http://localhost:5500`.
 
 Built by **Sujal Maru** — a fresher developer based in Pune, Maharashtra, as a personal portfolio project to practice full-stack-feeling web development using Firebase as a backend-as-a-service.
 
-- 🔗 GitHub: [@Sujal-0803](https://github.com/Sujal-0803)
+- 🔗 GitHub: [Sujal-0803](https://github.com/Sujal-0803)
 - 💼 LinkedIn: [sujalmaru0803](https://www.linkedin.com/in/sujalmaru0803)
 - 📧 Email: sujalmaru2004@gmail.com
 
