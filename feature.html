@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Features | Fresh & Organic Cold Storage</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg:#0D1B2A; --surf:#122234; --card:#1A2F42;
+            --ac:#00B4D8; --ac-dim:rgba(0,180,216,0.10); --ac-mid:rgba(0,180,216,0.22);
+            --tx:#E8F5E9; --mt:#8FAABF; --border:rgba(0,180,216,0.14);
+            --success:#06D6A0; --warn:#FFD60A; --danger:#FF6B6B; --radius:14px;
+        }
+        *,*::before,*::after{box-sizing:border-box;}
+        html{scroll-behavior:smooth;}
+        body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;font-size:15px;line-height:1.65;overflow-x:hidden;}
+
+        /* ── NAVBAR (injected by navbar.js) ── */
+        #navbar-placeholder .navbar {
+            background: var(--surf) !important;
+            border-bottom: 0.5px solid var(--border);
+            padding: 0 !important;
+        }
+        #navbar-placeholder .navbar-brand h2 { 
+            font-size: 18px; 
+            color: var(--ac); 
+        }
+
+        #navbar-placeholder .navbar-brand small { 
+            color: var(--mt); 
+            font-size: 10px; 
+            letter-spacing: 0.12em; 
+        }
+
+        #navbar-placeholder .nav-link { 
+            color: var(--mt) !important; 
+            font-size: 15px; 
+            font-weight: 500; 
+            padding: 1.1rem 0.65rem !important; 
+            transition: color .2s; 
+            font-family: 'Inter', sans-serif; 
+            letter-spacing: 0.01em; 
+        }
+
+        #navbar-placeholder .nav-link:hover,
+        #navbar-placeholder .nav-link.active { 
+            color: var(--ac) !important; 
+        }
+
+        #navbar-placeholder .custom-btn { 
+            background: var(--ac) !important; 
+            color: #0D1B2A !important; 
+            font-weight: 600; 
+            order: none; 
+            border-radius: 8px; 
+        }
+
+        #navbar-placeholder .navbar-toggler { 
+            border-color: var(--border); 
+        }
+
+        #navbar-placeholder .navbar-toggler-icon { 
+            filter: invert(1); 
+        }
+
+        #navbar-placeholder .logo-icon { 
+            width: 36px; 
+            height: 36px; 
+            background: var(--ac-dim); 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: var(--ac); 
+            font-size: 16px; 
+            margin-right: 10px; 
+        }
+
+        #navbar-placeholder .logo-text h2 { 
+            color: var(--ac); 
+        }
+
+        #navbar-placeholder .bg-light { 
+            background: var(--card) !important; 
+        }
+
+        #navbar-placeholder .text-dark { 
+            color: var(--mt) !important; 
+        }
+
+        #navbar-placeholder .search-box {
+            position: absolute; top: calc(100% + 10px); right: 0;
+            width: 280px; background: var(--surf);
+            border: 0.5px solid var(--border); border-radius: var(--radius);
+            padding: 10px; z-index: 1000; box-shadow: var(--shadow);
+        }
+        #navbar-placeholder .search-box .form-control {
+            background: var(--card); border: 0.5px solid var(--border);
+            color: var(--tx); border-radius: 8px; font-size: 13px;
+        }
+        #navbar-placeholder .search-box .form-control::placeholder { color: var(--mt); }
+        #navbar-placeholder .dropdown-menu {
+            background: var(--surf); border: 0.5px solid var(--border) !important;
+            border-radius: var(--radius) !important;
+        }
+        #navbar-placeholder .dropdown-item { 
+            color: var(--tx); 
+            font-size: 13px; 
+        }
+
+        #navbar-placeholder .dropdown-item:hover { 
+            background: var(--ac-dim); 
+            color: var(--ac); 
+        }
+
+        #navbar-placeholder .dropdown-item.text-danger { 
+            color: var(--danger) !important; 
+        }
+
+        #navbar-placeholder .dropdown-divider { 
+            border-color: var(--border); 
+        }
+
+        #navbar-placeholder .cart-count-badge { 
+            font-size: 9px !important; 
+        }
+
+        section{padding:80px 0;}
+        .section-alt{background:var(--surf);}
+
+        .eyebrow{font-size:11px;font-weight:600;color:var(--ac);font-family:'Space Grotesk',sans-serif;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:10px;}
+        .sec-title{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,42px);font-weight:700;color:var(--tx);line-height:1.15;margin-bottom:14px;}
+        .sec-title span{color:var(--ac);}
+        .sec-title em{font-style:italic;color:var(--ac);}
+        .sec-sub{font-size:15px;color:var(--mt);line-height:1.75;}
+
+        .btn-ac{display:inline-flex;align-items:center;gap:8px;background:var(--ac);color:#0D1B2A;font-weight:700;font-size:14px;padding:11px 26px;border-radius:10px;border:none;text-decoration:none;transition:background .2s,transform .2s;}
+        .btn-ac:hover{background:#00c8f0;color:#0D1B2A;transform:translateY(-1px);}
+        .btn-outline{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--ac);font-weight:600;font-size:14px;padding:11px 26px;border-radius:10px;border:1.5px solid var(--ac-mid);text-decoration:none;transition:all .2s;}
+        .btn-outline:hover{background:var(--ac-dim);color:var(--ac);}
+
+        .reveal{opacity:0;transform:translateY(22px);transition:opacity .5s ease,transform .5s ease;}
+        .reveal.visible{opacity:1;transform:translateY(0);}
+
+        .feat-hero{background:var(--bg);padding:72px 0 64px;position:relative;overflow:hidden;}
+        .feat-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:48px 48px;opacity:.35;}
+        .feat-hero::after{content:'';position:absolute;top:0;right:0;width:500px;height:100%;background:radial-gradient(ellipse at right,rgba(0,180,216,.07),transparent 70%);pointer-events:none;}
+        .feat-hero .container{position:relative;z-index:1;}
+
+        .breadcrumb-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mt);margin-bottom:24px;}
+        .breadcrumb-row a{color:var(--ac);text-decoration:none;}
+
+        .hero-tag{display:inline-flex;align-items:center;gap:7px;background:var(--ac-dim);border:0.5px solid var(--ac-mid);color:var(--ac);font-size:12px;font-weight:600;font-family:'Space Grotesk',sans-serif;letter-spacing:.07em;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:20px;}
+
+        .feat-hero-right{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+        .hero-stat{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;transition:border-color .2s;}
+        .hero-stat:hover{border-color:var(--ac-mid);}
+        .hero-stat-icon{font-size:28px;margin-bottom:8px;display:block;}
+        .hero-stat-num{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--ac);line-height:1;}
+        .hero-stat-lbl{font-size:11px;color:var(--mt);margin-top:4px;}
+
+        .big-feat-card{background:var(--card);border:0.5px solid var(--border);border-radius:20px;padding:36px 30px;height:100%;transition:border-color .2s,transform .2s;position:relative;overflow:hidden;}
+        .big-feat-card::before{content:'';position:absolute;top:-2px;left:30px;right:30px;height:2px;background:linear-gradient(90deg,transparent,var(--ac),transparent);border-radius:2px;}
+        .big-feat-card:hover{border-color:var(--ac-mid);transform:translateY(-4px);}
+        .big-feat-icon{width:58px;height:58px;border-radius:16px;background:var(--ac-dim);border:0.5px solid var(--ac-mid);display:flex;align-items:center;justify-content:center;color:var(--ac);font-size:24px;margin-bottom:20px;}
+        .big-feat-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--tx);margin-bottom:10px;}
+        .big-feat-desc{font-size:14px;color:var(--mt);line-height:1.75;margin-bottom:16px;}
+        .feat-bullets{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;}
+        .feat-bullets li{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mt);}
+        .feat-bullets li i{color:var(--success);font-size:11px;flex-shrink:0;}
+
+        .feat-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:24px 20px;height:100%;transition:border-color .2s,transform .2s;}
+        .feat-card:hover{border-color:var(--ac-mid);transform:translateY(-3px);}
+        .feat-card-icon{width:46px;height:46px;border-radius:12px;background:var(--ac-dim);border:0.5px solid var(--ac-mid);display:flex;align-items:center;justify-content:center;color:var(--ac);font-size:19px;margin-bottom:14px;}
+        .feat-card-title{font-size:15px;font-weight:600;color:var(--tx);margin-bottom:7px;}
+        .feat-card-desc{font-size:13px;color:var(--mt);line-height:1.7;}
+
+        .ic-green .feat-card-icon,.ic-green .big-feat-icon{background:rgba(6,214,160,.1);border-color:rgba(6,214,160,.22);color:var(--success);}
+        .ic-warn  .feat-card-icon,.ic-warn  .big-feat-icon{background:rgba(255,214,10,.1);border-color:rgba(255,214,10,.22);color:var(--warn);}
+        .ic-danger.feat-card-icon,.ic-danger.big-feat-icon{background:rgba(255,107,107,.1);border-color:rgba(255,107,107,.22);color:var(--danger);}
+
+        .cmp-table{width:100%;border-collapse:collapse;}
+        .cmp-table th{padding:12px 16px;font-size:12px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.08em;border-bottom:0.5px solid var(--border);font-family:'Space Grotesk',sans-serif;}
+        .cmp-table td{padding:14px 16px;font-size:14px;color:var(--mt);border-bottom:0.5px solid rgba(255,255,255,.04);}
+        .cmp-table tr:last-child td{border-bottom:none;}
+        .cmp-table td:first-child{color:var(--tx);font-weight:500;}
+        .cmp-table .yes{color:var(--success);}
+        .cmp-table .no{color:rgba(255,107,107,.5);}
+        .cmp-table thead th:nth-child(2){color:var(--ac);}
+        .cmp-table tbody tr:hover td{background:rgba(255,255,255,.02);}
+        .cmp-highlight{background:rgba(0,180,216,.04) !important;border-left:2px solid var(--ac);}
+
+        .how-step{display:flex;gap:20px;align-items:flex-start;margin-bottom:32px;}
+        .how-step:last-child{margin-bottom:0;}
+        .how-num{width:42px;height:42px;border-radius:50%;background:var(--ac);color:#0D1B2A;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Grotesk',sans-serif;box-shadow:0 0 0 6px rgba(0,180,216,.1);}
+        .how-content-title{font-size:15px;font-weight:700;color:var(--tx);margin-bottom:4px;font-family:'Space Grotesk',sans-serif;}
+        .how-content-desc{font-size:13px;color:var(--mt);line-height:1.7;}
+        .how-connector{width:2px;height:28px;background:linear-gradient(to bottom,var(--ac),transparent);margin-left:20px;margin-top:-16px;margin-bottom:4px;}
+
+        .spec-row{display:flex;justify-content:space-between;align-items:center;padding:13px 18px;font-size:14px;border-bottom:0.5px solid rgba(255,255,255,.04);}
+        .spec-row:last-child{border-bottom:none;}
+        .spec-label{color:var(--mt);}
+        .spec-val{color:var(--tx);font-weight:600;font-family:'Space Grotesk',sans-serif;}
+        .spec-badge{background:var(--ac-dim);border:0.5px solid var(--ac-mid);border-radius:6px;padding:2px 10px;font-size:11px;color:var(--ac);font-weight:700;}
+
+        .mini-testi{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:20px;height:100%;}
+        .mini-testi-text{font-size:14px;color:var(--mt);line-height:1.7;margin-bottom:14px;font-style:italic;}
+        .mini-testi-text::before{content:'"';font-size:28px;color:var(--ac);line-height:0;vertical-align:-.4em;margin-right:4px;}
+        .mini-testi-name{font-size:13px;font-weight:700;color:var(--tx);}
+        .mini-testi-loc{font-size:11px;color:var(--mt);}
+        .star-row{color:var(--warn);font-size:12px;margin-bottom:10px;}
+
+        .cta-banner{background:linear-gradient(135deg,var(--surf) 0%,#0a2236 100%);border:0.5px solid var(--border);border-radius:20px;padding:52px 40px;position:relative;overflow:hidden;text-align:center;}
+        .cta-banner::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:400px;height:200px;background:radial-gradient(ellipse,rgba(0,180,216,.08),transparent 70%);pointer-events:none;}
+
+        footer{background:#060E17;border-top:0.5px solid var(--border);padding:56px 0 28px;}
+        .footer-logo-text{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ac);margin-bottom:4px;}
+        .footer-logo-sub{font-size:11px;color:var(--mt);letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;}
+        .footer-desc{font-size:13px;color:var(--mt);max-width:260px;line-height:1.7;margin-bottom:20px;}
+        .footer-social{display:flex;gap:10px;}
+        .social-btn{width:36px;height:36px;border-radius:8px;background:var(--card);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--mt);font-size:14px;text-decoration:none;transition:all .2s;}
+        .social-btn:hover{background:var(--ac-dim);color:var(--ac);border-color:var(--ac-mid);}
+        .footer-heading{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:16px;font-family:'Space Grotesk',sans-serif;letter-spacing:.05em;}
+        .footer-links{list-style:none;padding:0;margin:0;}
+        .footer-links li{margin-bottom:10px;}
+        .footer-links a{font-size:13px;color:var(--mt);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:6px;}
+        .footer-links a:hover{color:var(--ac);}
+        .footer-links a i{font-size:10px;color:var(--ac);}
+        .footer-contact-item{display:flex;gap:10px;margin-bottom:12px;font-size:13px;color:var(--mt);}
+        .footer-contact-item i{color:var(--ac);margin-top:2px;flex-shrink:0;}
+        .footer-bottom{border-top:0.5px solid var(--border);margin-top:40px;padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--mt);}
+        .footer-bottom a{color:var(--mt);text-decoration:none;}
+        .footer-bottom a:hover{color:var(--ac);}
+        .portfolio-bar{background:var(--ac-dim);border-top:0.5px solid var(--ac-mid);padding:10px 0;text-align:center;font-size:12px;color:var(--ac);font-family:'Space Grotesk',sans-serif;}
+        .portfolio-bar a{color:var(--ac);font-weight:600;}
+
+        #backToTop{position:fixed;bottom:28px;right:28px;width:42px;height:42px;border-radius:50%;background:var(--ac);color:#0D1B2A;display:none;align-items:center;justify-content:center;font-size:16px;cursor:pointer;z-index:999;border:none;box-shadow:0 4px 16px rgba(0,180,216,.3);transition:all .2s;}
+        #backToTop:hover{background:#00c8f0;transform:translateY(-2px);}
+        #backToTop.show{display:flex;}
+
+        @media(max-width:991px){section{padding:56px 0;}.feat-hero{padding:52px 0 44px;}.cta-banner{padding:36px 24px;}.feat-hero-right{grid-template-columns:1fr 1fr;margin-top:36px;}}
+        @media(max-width:575px){.sec-title{font-size:26px;}.feat-hero-right{grid-template-columns:1fr 1fr;}.footer-bottom{flex-direction:column;text-align:center;gap:8px;}}
+    </style>
+</head>
+<body>
+
+<div id="navbar-placeholder"></div>
+
+<div class="feat-hero">
+    <div class="container">
+        <div class="breadcrumb-row">
+            <a href="index.html">Home</a>
+            <i class="fa fa-chevron-right" style="font-size:9px;"></i>
+            <span>Features</span>
+        </div>
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 reveal">
+                <div class="hero-tag"><i class="fa fa-star"></i> What We Offer</div>
+                <h1 class="sec-title">
+                    Everything Fresh,<br>
+                    Delivered with <em>Care</em>
+                </h1>
+                <p class="sec-sub mb-4">
+                    From farm-direct sourcing to doorstep delivery — every feature of Fresh & Organic Cold Storage is designed to give you the freshest, cleanest, most reliable organic grocery experience.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="products.html" class="btn-ac"><i class="fa fa-cart-shopping"></i> Shop Now</a>
+                    <a href="contact.html" class="btn-outline"><i class="fa fa-envelope"></i> Get in Touch</a>
+                </div>
+            </div>
+            <div class="col-lg-6 reveal">
+                <div class="feat-hero-right">
+                    <div class="hero-stat">
+                        <span class="hero-stat-icon">🌡️</span>
+                        <div class="hero-stat-num">2°C</div>
+                        <div class="hero-stat-lbl">Storage Temperature</div>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-icon">🚚</span>
+                        <div class="hero-stat-num">Same Day</div>
+                        <div class="hero-stat-lbl">Dispatch</div>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-icon">🌿</span>
+                        <div class="hero-stat-num">100%</div>
+                        <div class="hero-stat-lbl">Organic Certified</div>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-icon">⭐</span>
+                        <div class="hero-stat-num">4.8/5</div>
+                        <div class="hero-stat-lbl">Customer Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section>
+    <div class="container">
+        <div class="text-center mb-5 reveal">
+            <span class="eyebrow">Core Features</span>
+            <h2 class="sec-title">Built Around <span>Your Trust</span></h2>
+            <p class="sec-sub mx-auto" style="max-width:560px;">Three pillars that make every order from Fresh & Organic worth it.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 reveal">
+                <div class="big-feat-card">
+                    <div class="big-feat-icon"><i class="fa fa-snowflake"></i></div>
+                    <div class="big-feat-title">Advanced Cold Storage</div>
+                    <div class="big-feat-desc">Our facility maintains a precise 2°C environment that preserves freshness, nutrients and shelf life of every product — from leafy greens to tropical fruits.</div>
+                    <ul class="feat-bullets">
+                        <li><i class="fa fa-check-circle"></i> Maintained at 2°C round the clock</li>
+                        <li><i class="fa fa-check-circle"></i> Humidity-controlled chambers</li>
+                        <li><i class="fa fa-check-circle"></i> Separate zones for fruits & vegetables</li>
+                        <li><i class="fa fa-check-circle"></i> Power backup — no temperature breaks</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 reveal">
+                <div class="big-feat-card ic-green">
+                    <div class="big-feat-icon"><i class="fa fa-leaf"></i></div>
+                    <div class="big-feat-title">100% Organic Certified</div>
+                    <div class="big-feat-desc">Every product in our catalogue is sourced directly from certified organic farms — no pesticides, no artificial ripening, no compromise on purity.</div>
+                    <ul class="feat-bullets">
+                        <li><i class="fa fa-check-circle"></i> Direct farm partnerships</li>
+                        <li><i class="fa fa-check-circle"></i> No pesticides or chemicals</li>
+                        <li><i class="fa fa-check-circle"></i> No artificial ripening agents</li>
+                        <li><i class="fa fa-check-circle"></i> Freshness score shown on every product</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 reveal">
+                <div class="big-feat-card ic-warn">
+                    <div class="big-feat-icon"><i class="fa fa-truck"></i></div>
+                    <div class="big-feat-title">Fast & Safe Delivery</div>
+                    <div class="big-feat-desc">Orders are packed in insulated cold-chain boxes and dispatched the same day — ensuring your produce arrives as fresh as it left our facility.</div>
+                    <ul class="feat-bullets">
+                        <li><i class="fa fa-check-circle"></i> Same-day dispatch</li>
+                        <li><i class="fa fa-check-circle"></i> Insulated cold-chain packaging</li>
+                        <li><i class="fa fa-check-circle"></i> Live order status tracking</li>
+                        <li><i class="fa fa-check-circle"></i> Free delivery on online payment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-alt">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-5 reveal">
+                <span class="eyebrow">How It Works</span>
+                <h2 class="sec-title">From Farm to <span>Your Door</span></h2>
+                <p class="sec-sub">A simple, transparent process — so you always know where your food comes from and how it gets to you.</p>
+                <a href="products.html" class="btn-ac mt-4"><i class="fa fa-shopping-cart"></i> Start Shopping</a>
+            </div>
+            <div class="col-lg-7 reveal">
+                <div class="how-step">
+                    <div class="how-num">1</div>
+                    <div>
+                        <div class="how-content-title">Farm Harvest</div>
+                        <div class="how-content-desc">Organic produce is harvested fresh from partner farms — hand-picked at peak ripeness, sorted and quality-checked on-site.</div>
+                    </div>
+                </div>
+                <div class="how-connector"></div>
+                <div class="how-step">
+                    <div class="how-num">2</div>
+                    <div>
+                        <div class="how-content-title">Cold Storage Intake</div>
+                        <div class="how-content-desc">Within hours of harvest, produce enters our 2°C facility. Graded by size, variety and quality — stored in humidity-controlled chambers.</div>
+                    </div>
+                </div>
+                <div class="how-connector"></div>
+                <div class="how-step">
+                    <div class="how-num">3</div>
+                    <div>
+                        <div class="how-content-title">You Place an Order</div>
+                        <div class="how-content-desc">Browse our organic range, add to cart, apply a coupon, choose payment — UPI, card or COD — and confirm your order in under 2 minutes.</div>
+                    </div>
+                </div>
+                <div class="how-connector"></div>
+                <div class="how-step">
+                    <div class="how-num">4</div>
+                    <div>
+                        <div class="how-content-title">Packed & Dispatched</div>
+                        <div class="how-content-desc">Your order is packed in insulated cold-chain boxes same day. Track it live — from Order Placed → Confirmed → Packed → Out for Delivery → Delivered.</div>
+                    </div>
+                </div>
+                <div class="how-connector"></div>
+                <div class="how-step">
+                    <div class="how-num">5</div>
+                    <div>
+                        <div class="how-content-title">Fresh at Your Door</div>
+                        <div class="how-content-desc">Your produce arrives fresh, cold and intact — exactly as it left our facility.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <div class="text-center mb-5 reveal">
+            <span class="eyebrow">All Features</span>
+            <h2 class="sec-title">Everything You <span>Get</span></h2>
+            <p class="sec-sub mx-auto" style="max-width:500px;">Every detail — from the app to the packaging — is designed with your experience in mind.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-sm-6 col-lg-4 reveal">
+                <div class="feat-card">
+                    <div class="feat-card-icon"><i class="fa fa-shield-alt"></i></div>
+                    <div class="feat-card-title">Secure Authentication</div>
+                    <div class="feat-card-desc">Login and register with Firebase Auth, including Google Sign-In. Your account, cart, orders and profile are fully protected — login required to access.</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 reveal">
+                <div class="feat-card ic-green">
+                    <div class="feat-card-icon"><i class="fa fa-box-open"></i></div>
+                    <div class="feat-card-title">Live Order Tracking</div>
+                    <div class="feat-card-desc">Flipkart-style order status tracker. Watch your order move from Order Placed → Confirmed → Packed → Out for Delivery → Delivered in real time.</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 reveal">
+                <div class="feat-card ic-warn">
+                    <div class="feat-card-icon"><i class="fa fa-tag"></i></div>
+                    <div class="feat-card-title">Coupons & Discounts</div>
+                    <div class="feat-card-desc">Apply coupon codes at checkout for instant savings. FRESH10, ORGANIC20, SAVE50 — real discount logic, not fake numbers.</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 reveal">
+                <div class="feat-card">
+                    <div class="feat-card-icon"><i class="fa fa-mobile-alt"></i></div>
+                    <div class="feat-card-title">Fully Responsive</div>
+                    <div class="feat-card-desc">Designed mobile-first. Every page works perfectly on phones, tablets and desktops using Bootstrap 5 responsive grid.</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 reveal">
+                <div class="feat-card ic-green">
+                    <div class="feat-card-icon"><i class="fa fa-credit-card"></i></div>
+                    <div class="feat-card-title">Multiple Payment Modes</div>
+                    <div class="feat-card-desc">Pay via UPI (PhonePe, GPay, Paytm), Credit/Debit Card (Visa, Mastercard, RuPay), Pay in 3 instalments, or Cash on Delivery.</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 reveal">
+                <div class="feat-card ic-warn">
+                    <div class="feat-card-icon"><i class="fa fa-star"></i></div>
+                    <div class="feat-card-title">Freshness Score</div>
+                    <div class="feat-card-desc">Every product shows a live freshness percentage and rating — so you know exactly what you're getting before you order.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-alt">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-4 reveal">
+                <span class="eyebrow">Why Choose Us</span>
+                <h2 class="sec-title">Fresh &amp; Organic vs <span>Regular Stores</span></h2>
+                <p class="sec-sub">See why families prefer Fresh & Organic over traditional grocery shopping.</p>
+            </div>
+            <div class="col-lg-8 reveal">
+                <div class="s-card" style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+                    <table class="cmp-table">
+                        <thead>
+                            <tr>
+                                <th style="width:40%;">Feature</th>
+                                <th>Fresh & Organic ✅</th>
+                                <th>Regular Store</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cold chain maintained</td>
+                                <td class="yes cmp-highlight"><i class="fa fa-check-circle me-1"></i> Always</td>
+                                <td class="no"><i class="fa fa-times-circle me-1"></i> Rarely</td>
+                            </tr>
+                            <tr>
+                                <td>100% organic certified</td>
+                                <td class="yes cmp-highlight"><i class="fa fa-check-circle me-1"></i> Yes</td>
+                                <td class="no"><i class="fa fa-times-circle me-1"></i> Mixed</td>
+                            </tr>
+                            <tr>
+                                <td>Same-day dispatch</td>
+                                <td class="yes cmp-highlight"><i class="fa fa-check-circle me-1"></i> Yes</td>
+                                <td class="no"><i class="fa fa-times-circle me-1"></i> 1–3 days</td>
+                            </tr>
+                            <tr>
+                                <td>Live order tracking</td>
+                                <td class="yes cmp-highlight"><i class="fa fa-check-circle me-1"></i> Real time</td>
+                                <td class="no"><i class="fa fa-times-circle me-1"></i> No</td>
+                            </tr>
+                            <tr>
+                                <td>No pesticides</td>
+                                <td class="yes cmp-highlight"><i class="fa fa-check-circle me-1"></i> Guaranteed</td>
+                                <td class="no"><i class="fa fa-times-circle me-1"></i> Not guaranteed</td>
+                            </tr>
+                            <tr>
+                                <td>Coupon discounts</td>
+                                <td class="yes cmp-highlight"><i class="fa fa-check-circle me-1"></i> Yes</td>
+                                <td class="no"><i class="fa fa-times-circle me-1"></i> Rarely</td>
+                            </tr>
+                            <tr>
+                                <td>Freshness score shown</td>
+                                <td class="yes cmp-highlight"><i class="fa fa-check-circle me-1"></i> Yes</td>
+                                <td class="no"><i class="fa fa-times-circle me-1"></i> No</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <div class="text-center mb-5 reveal">
+            <span class="eyebrow">Technical Specs</span>
+            <h2 class="sec-title">Built to <span>Perform</span></h2>
+            <p class="sec-sub mx-auto" style="max-width:500px;">The infrastructure and tech stack behind every order.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-6 reveal">
+                <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+                    <div style="padding:16px 18px;border-bottom:0.5px solid var(--border);font-size:13px;font-weight:700;color:var(--tx);font-family:'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.07em;">
+                        <i class="fa fa-snowflake me-2" style="color:var(--ac);"></i>Cold Storage Specs
+                    </div>
+                    <div class="spec-row"><span class="spec-label">Storage Temperature</span><span class="spec-val">2°C</span></div>
+                    <div class="spec-row"><span class="spec-label">Storage Type</span><span class="spec-val">Cold Chain</span></div>
+                    <div class="spec-row"><span class="spec-label">Fruit Zone</span><span class="spec-val">2°C Cold Chain</span></div>
+                    <div class="spec-row"><span class="spec-label">Vegetable Zone</span><span class="spec-val">2°C Cold Chain</span></div>
+                    <div class="spec-row"><span class="spec-label">Min Order</span><span class="spec-val">500g</span></div>
+                    <div class="spec-row"><span class="spec-label">Delivery</span><span class="spec-badge">Same Day</span></div>
+                </div>
+            </div>
+            <div class="col-lg-6 reveal">
+                <div style="background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+                    <div style="padding:16px 18px;border-bottom:0.5px solid var(--border);font-size:13px;font-weight:700;color:var(--tx);font-family:'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.07em;">
+                        <i class="fa fa-code me-2" style="color:var(--ac);"></i>Platform Specs
+                    </div>
+                    <div class="spec-row"><span class="spec-label">Frontend</span><span class="spec-val">HTML5, CSS3, Bootstrap 5</span></div>
+                    <div class="spec-row"><span class="spec-label">Language</span><span class="spec-val">Vanilla JavaScript ES6</span></div>
+                    <div class="spec-row"><span class="spec-label">Auth</span><span class="spec-badge">Firebase Auth</span></div>
+                    <div class="spec-row"><span class="spec-label">Database</span><span class="spec-badge">Cloud Firestore</span></div>
+                    <div class="spec-row"><span class="spec-label">Responsive</span><span class="spec-val">Mobile + Tablet + Desktop</span></div>
+                    <div class="spec-row"><span class="spec-label">Pages</span><span class="spec-val">13 fully built</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-alt">
+    <div class="container">
+        <div class="text-center mb-5 reveal">
+            <span class="eyebrow">What Customers Say</span>
+            <h2 class="sec-title">Loved by <span>Families</span></h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4 reveal">
+                <div class="mini-testi">
+                    <div class="star-row">★★★★★</div>
+                    <div class="mini-testi-text">Vegetables are always fresh. The brinjal and capsicum I ordered last week were absolutely farm-fresh. Will definitely order again every week!</div>
+                    <div class="mini-testi-name">Priya Sharma</div>
+                    <div class="mini-testi-loc">Pune, Maharashtra</div>
+                </div>
+            </div>
+            <div class="col-md-4 reveal">
+                <div class="mini-testi">
+                    <div class="star-row">★★★★★</div>
+                    <div class="mini-testi-text">Cold storage quality is excellent. Fruits stay fresh for days after delivery. Best organic store in the area — highly recommend to everyone.</div>
+                    <div class="mini-testi-name">Rahul Kulkarni</div>
+                    <div class="mini-testi-loc">Sambhaji Nagar, Maharashtra</div>
+                </div>
+            </div>
+            <div class="col-md-4 reveal">
+                <div class="mini-testi">
+                    <div class="star-row">★★★★☆</div>
+                    <div class="mini-testi-text">Great variety of seasonal fruits. Delivery is fast and packaging keeps everything cold and fresh. Very satisfied with every order so far.</div>
+                    <div class="mini-testi-name">Anjali More</div>
+                    <div class="mini-testi-loc">Nashik, Maharashtra</div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-4 reveal">
+            <a href="testimonial.html" class="btn-outline"><i class="fa fa-comments"></i> Read All Reviews</a>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <div class="cta-banner reveal">
+            <span class="eyebrow" style="display:block;margin-bottom:10px;">Ready to Experience It?</span>
+            <h2 class="sec-title" style="font-size:clamp(24px,3vw,36px);">Start Shopping <span>Fresh Today</span></h2>
+            <p class="sec-sub mx-auto" style="margin-bottom:28px;max-width:500px;">
+                Browse our range of certified organic products — fruits, vegetables, leafy greens and more — delivered fresh to your door.
+            </p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="products.html" class="btn-ac"><i class="fa fa-cart-shopping"></i> Shop Now</a>
+                <a href="about.html" class="btn-outline"><i class="fa fa-info-circle"></i> About This Project</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-4">
+                <div class="footer-logo-text">🌿 Fresh & Organic</div>
+                <div class="footer-logo-sub">Cold Storage</div>
+                <p class="footer-desc">Premium cold storage for organic fruits, vegetables and fresh produce. Farm-fresh, pesticide-free, delivered to your door.</p>
+                <div class="footer-social">
+                    <a href="https://github.com/Sujal-0803" class="social-btn"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/sujalmaru0803" class="social-btn"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.instagram.com/sujalll._24" class="social-btn"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/7972891795" class="social-btn"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="col-6 col-lg-2">
+                <div class="footer-heading">Quick Links</div>
+                <ul class="footer-links">
+                    <li><a href="index.html"><i class="fa fa-chevron-right"></i> Home</a></li>
+                    <li><a href="about.html"><i class="fa fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="products.html"><i class="fa fa-chevron-right"></i> Products</a></li>
+                    <li><a href="feature.html"><i class="fa fa-chevron-right"></i> Features</a></li>
+                    <li><a href="testimonial.html"><i class="fa fa-chevron-right"></i> Testimonials</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
+                <div class="footer-heading">My Account</div>
+                <ul class="footer-links">
+                    <li><a href="login.html"><i class="fa fa-chevron-right"></i> Login</a></li>
+                    <li><a href="register.html"><i class="fa fa-chevron-right"></i> Register</a></li>
+                    <li><a href="profile.html"><i class="fa fa-chevron-right"></i> My Profile</a></li>
+                    <li><a href="orders.html"><i class="fa fa-chevron-right"></i> My Orders</a></li>
+                    <li><a href="cart.html"><i class="fa fa-chevron-right"></i> My Cart</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4">
+                <div class="footer-heading">Contact Us</div>
+                <div class="footer-contact-item"><i class="fa fa-map-marker-alt"></i><span>Pune, Maharashtra, India</span></div>
+                <div class="footer-contact-item"><i class="fa fa-phone"></i><span>+91 79728 91795</span></div>
+                <div class="footer-contact-item"><i class="fa fa-envelope"></i><span>sujalmaru2004@gmail.com</span></div>
+                <div class="footer-contact-item"><i class="fa fa-clock"></i><span>Mon – Sat: 9:00 AM – 6:00 PM</span></div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 Fresh &amp; Organic Cold Storage — Personal Portfolio Project by <strong style="color:var(--ac);">Sujal Maru</strong></span>
+            <span><a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms of Service</a></span>
+        </div>
+    </div>
+</footer>
+
+<div class="portfolio-bar">
+    ⚡ Personal portfolio project — Built by <a href="contact.html">Sujal Maru</a>, Pune
+</div>
+
+<button id="backToTop" aria-label="Back to top"><i class="fa fa-arrow-up"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="js/navbar.js"></script>
+<script>
+    const btn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => btn.classList.toggle('show', window.scrollY > 400));
+    btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

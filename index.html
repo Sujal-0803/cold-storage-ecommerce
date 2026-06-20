@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fresh & Organic Cold Storage</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ── TOKENS ── */
+        :root {
+            --bg:       #0D1B2A;
+            --surf:     #122234;
+            --card:     #1A2F42;
+            --ac:       #00B4D8;
+            --ac-dim:   rgba(0,180,216,0.12);
+            --ac-mid:   rgba(0,180,216,0.25);
+            --ac-glow:  rgba(0,180,216,0.08);
+            --tx:       #E8F5E9;
+            --mt:       #8FAABF;
+            --border:   rgba(0,180,216,0.14);
+            --success:  #06D6A0;
+            --warn:     #FFD60A;
+            --danger:   #FF6B6B;
+            --radius:   14px;
+            --shadow:   0 4px 24px rgba(0,0,0,0.25);
+        }
+
+        /* ── RESET ── */
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--tx);
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ── NAVBAR (injected by navbar.js) ── */
+        #navbar-placeholder .navbar {
+            background: var(--surf) !important;
+            border-bottom: 0.5px solid var(--border);
+            padding: 0 !important;
+        }
+        #navbar-placeholder .navbar-brand h2 { font-size: 18px; color: var(--ac); }
+        #navbar-placeholder .navbar-brand small { color: var(--mt); font-size: 10px; letter-spacing: 0.12em; }
+        #navbar-placeholder .nav-link { color: var(--mt) !important; font-size: 15px; font-weight: 500; padding: 1.1rem 0.65rem !important; transition: color .2s; font-family: 'Inter', sans-serif; letter-spacing: 0.01em; }
+        #navbar-placeholder .nav-link:hover,
+        #navbar-placeholder .nav-link.active { color: var(--ac) !important; }
+        #navbar-placeholder .custom-btn { background: var(--ac) !important; color: #0D1B2A !important; font-weight: 600; border: none; border-radius: 8px; }
+        #navbar-placeholder .navbar-toggler { border-color: var(--border); }
+        #navbar-placeholder .navbar-toggler-icon { filter: invert(1); }
+        #navbar-placeholder .logo-icon { width: 36px; height: 36px; background: var(--ac-dim); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--ac); font-size: 16px; margin-right: 10px; }
+        #navbar-placeholder .logo-text h2 { color: var(--ac); }
+        #navbar-placeholder .bg-light { background: var(--card) !important; }
+        #navbar-placeholder .text-dark { color: var(--mt) !important; }
+        #navbar-placeholder .search-box {
+            position: absolute; top: calc(100% + 10px); right: 0;
+            width: 280px; background: var(--surf);
+            border: 0.5px solid var(--border); border-radius: var(--radius);
+            padding: 10px; z-index: 1000; box-shadow: var(--shadow);
+        }
+        #navbar-placeholder .search-box .form-control {
+            background: var(--card); border: 0.5px solid var(--border);
+            color: var(--tx); border-radius: 8px; font-size: 13px;
+        }
+        #navbar-placeholder .search-box .form-control::placeholder { color: var(--mt); }
+        #navbar-placeholder .dropdown-menu {
+            background: var(--surf); border: 0.5px solid var(--border) !important;
+            border-radius: var(--radius) !important;
+        }
+        #navbar-placeholder .dropdown-item { color: var(--tx); font-size: 13px; }
+        #navbar-placeholder .dropdown-item:hover { background: var(--ac-dim); color: var(--ac); }
+        #navbar-placeholder .dropdown-item.text-danger { color: var(--danger) !important; }
+        #navbar-placeholder .dropdown-divider { border-color: var(--border); }
+        #navbar-placeholder .cart-count-badge { font-size: 9px !important; }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 92vh;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding: 80px 0 60px;
+        }
+
+        /* background grid pattern */
+        .hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 48px 48px;
+            opacity: 0.4;
+        }
+
+        /* radial glow behind headline */
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px; height: 400px;
+            background: radial-gradient(ellipse, rgba(0,180,216,0.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content { position: relative; z-index: 1; }
+
+        .hero-eyebrow {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--ac-dim); border: 0.5px solid var(--ac-mid);
+            color: var(--ac); font-size: 12px; font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            padding: 5px 14px; border-radius: 20px;
+            margin-bottom: 24px;
+        }
+        .hero-eyebrow i { font-size: 10px; }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(36px, 5vw, 62px);
+            font-weight: 800;
+            color: var(--tx);
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+        .hero-title span { color: var(--ac); }
+
+        .hero-sub {
+            font-size: 16px; color: var(--mt);
+            max-width: 500px; margin-bottom: 36px;
+            line-height: 1.7;
+        }
+
+        .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 52px; }
+
+        .btn-ac {
+            background: var(--ac); color: #0D1B2A;
+            font-weight: 700; font-size: 14px;
+            padding: 12px 28px; border-radius: 10px; border: none;
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: all .2s; text-decoration: none;
+        }
+        .btn-ac:hover { background: #00c8f0; color: #0D1B2A; transform: translateY(-1px); }
+
+        .btn-outline-ac {
+            background: transparent; color: var(--ac);
+            font-weight: 600; font-size: 14px;
+            padding: 12px 28px; border-radius: 10px;
+            border: 1.5px solid var(--ac-mid);
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: all .2s; text-decoration: none;
+        }
+        .btn-outline-ac:hover { background: var(--ac-dim); color: var(--ac); }
+
+        /* trust row */
+        .trust-row { display: flex; gap: 28px; flex-wrap: wrap; }
+        .trust-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--mt); }
+        .trust-item i { color: var(--ac); font-size: 14px; }
+
+        /* hero image / visual */
+        .hero-visual {
+            position: relative; z-index: 1;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .hero-card-main {
+            background: var(--surf);
+            border: 0.5px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%; max-width: 380px;
+            box-shadow: 0 8px 48px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .hero-card-main::before {
+            content: '';
+            position: absolute; top: -1px; left: 24px; right: 24px; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--ac), transparent);
+            border-radius: 2px;
+        }
+        .hc-label {
+            font-size: 10px; font-weight: 600; color: var(--ac);
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px;
+        }
+        .hc-product-row {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--card); border-radius: 10px;
+            padding: 10px 12px; margin-bottom: 8px;
+            border: 0.5px solid var(--border);
+        }
+        .hc-emoji { font-size: 24px; width: 40px; text-align: center; }
+        .hc-name  { font-size: 13px; font-weight: 500; color: var(--tx); }
+        .hc-price { font-size: 12px; color: var(--ac); font-weight: 600; margin-left: auto; }
+        .hc-badge { font-size: 8px; font-weight: 700; padding: 2px 7px; border-radius: 8px; background: var(--ac-dim); color: var(--ac); display: inline-block; margin-top: 2px; }
+        .hc-temp-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card); border-radius: 10px; padding: 10px 14px;
+            border: 0.5px solid var(--border); margin-top: 12px;
+        }
+        .hc-temp-val { font-size: 22px; font-weight: 800; color: var(--ac); }
+        .hc-temp-lbl { font-size: 10px; color: var(--mt); }
+        .hc-temp-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--success); font-weight: 500; }
+        .hc-temp-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
+
+        /* floating badge */
+        .hero-float-badge {
+            position: absolute; top: -16px; right: -16px;
+            background: var(--warn); color: #0D1B2A;
+            font-size: 11px; font-weight: 700;
+            padding: 8px 14px; border-radius: 20px;
+            font-family: 'Space Grotesk', sans-serif;
+            box-shadow: 0 4px 16px rgba(255,214,10,0.3);
+        }
+
+        /* ── STATS STRIP ── */
+        .stats-strip {
+            background: var(--surf);
+            border-top: 0.5px solid var(--border);
+            border-bottom: 0.5px solid var(--border);
+            padding: 28px 0;
+        }
+        .stat-item { text-align: center; padding: 0 20px; }
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px; font-weight: 700; color: var(--ac);
+            line-height: 1;
+        }
+        .stat-label { font-size: 12px; color: var(--mt); margin-top: 4px; font-weight: 500; }
+        .stat-divider { width: 1px; background: var(--border); align-self: stretch; }
+
+        /* ── SECTION SHARED ── */
+        .section-eyebrow {
+            font-size: 11px; font-weight: 600; color: var(--ac);
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(26px, 3.5vw, 38px);
+            font-weight: 700; color: var(--tx); margin-bottom: 12px; line-height: 1.2;
+        }
+        .section-title span { color: var(--ac); }
+        .section-sub { font-size: 15px; color: var(--mt); max-width: 540px; line-height: 1.7; }
+
+        section { padding: 80px 0; }
+        .section-alt { background: var(--surf); }
+
+        /* ── FEATURED PRODUCTS ── */
+        .prod-card {
+            background: var(--card);
+            border: 0.5px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: transform .2s, box-shadow .2s, border-color .2s;
+            height: 100%;
+        }
+        .prod-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,180,216,0.1);
+            border-color: var(--ac-mid);
+        }
+        .prod-img-wrap {
+            height: 160px; background: var(--surf);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 60px; position: relative; overflow: hidden;
+        }
+        .prod-badge-wrap { position: absolute; top: 10px; left: 10px; display: flex; flex-direction: column; gap: 4px; }
+        .badge-organic { font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 8px; background: var(--ac-dim); color: var(--ac); font-family: 'Space Grotesk', sans-serif; letter-spacing: 0.05em; }
+        .badge-seasonal { font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 8px; background: rgba(255,214,10,0.1); color: var(--warn); font-family: 'Space Grotesk', sans-serif; }
+        .prod-wish { position: absolute; top: 10px; right: 10px; color: var(--mt); font-size: 16px; cursor: pointer; transition: color .2s; }
+        .prod-wish:hover { color: var(--danger); }
+        .prod-body { padding: 16px; }
+        .prod-name { font-size: 15px; font-weight: 600; color: var(--tx); margin-bottom: 4px; }
+        .prod-price { font-size: 15px; font-weight: 700; color: var(--ac); margin-bottom: 10px; }
+        .fresh-label { font-size: 10px; color: var(--mt); margin-bottom: 4px; font-family: 'Space Grotesk', sans-serif; }
+        .fresh-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 12px; }
+        .fresh-fill { height: 4px; border-radius: 2px; background: var(--ac); }
+        .prod-btns { display: flex; gap: 8px; }
+        .btn-view {
+            flex: 1; padding: 8px 0; font-size: 12px; font-weight: 500;
+            border: 0.5px solid var(--ac-mid); color: var(--ac);
+            border-radius: 8px; background: transparent; text-align: center;
+            text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: background .2s;
+        }
+        .btn-view:hover { background: var(--ac-dim); color: var(--ac); }
+        .btn-add {
+            flex: 1; padding: 8px 0; font-size: 12px; font-weight: 700;
+            background: var(--ac); color: #0D1B2A;
+            border-radius: 8px; border: none; text-align: center;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: background .2s; cursor: pointer;
+        }
+        .btn-add:hover { background: #00c8f0; }
+
+        /* ── WHY US ── */
+        .why-card {
+            background: var(--card);
+            border: 0.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            transition: border-color .2s, transform .2s;
+            height: 100%;
+        }
+        .why-card:hover { border-color: var(--ac-mid); transform: translateY(-2px); }
+        .why-icon {
+            width: 52px; height: 52px; border-radius: 12px;
+            background: var(--ac-dim); border: 0.5px solid var(--ac-mid);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--ac); font-size: 22px; margin-bottom: 18px;
+        }
+        .why-title { font-size: 16px; font-weight: 600; color: var(--tx); margin-bottom: 8px; }
+        .why-desc { font-size: 13px; color: var(--mt); line-height: 1.7; }
+
+        /* ── HOW IT WORKS ── */
+        .how-step {
+            display: flex; gap: 20px; align-items: flex-start;
+            padding: 24px; background: var(--card);
+            border: 0.5px solid var(--border);
+            border-radius: var(--radius); margin-bottom: 16px;
+            transition: border-color .2s;
+        }
+        .how-step:hover { border-color: var(--ac-mid); }
+        .how-num {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: var(--ac-dim); border: 0.5px solid var(--ac-mid);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 800; color: var(--ac);
+            font-family: 'Space Grotesk', sans-serif; flex-shrink: 0;
+        }
+        .how-title { font-size: 15px; font-weight: 600; color: var(--tx); margin-bottom: 4px; }
+        .how-desc  { font-size: 13px; color: var(--mt); line-height: 1.6; }
+
+        .how-visual {
+            background: var(--card); border: 0.5px solid var(--border);
+            border-radius: 20px; padding: 28px; height: 100%;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .how-temp-big {
+            font-family: 'Playfair Display', serif;
+            font-size: 72px; font-weight: 700; color: var(--ac);
+            line-height: 1; margin-bottom: 4px;
+        }
+        .how-temp-sub { font-size: 14px; color: var(--mt); margin-bottom: 28px; }
+        .how-stat-row { display: flex; gap: 12px; flex-wrap: wrap; }
+        .how-stat {
+            flex: 1; min-width: 100px;
+            background: var(--surf); border: 0.5px solid var(--border);
+            border-radius: 10px; padding: 14px;
+        }
+        .how-stat-val { font-size: 20px; font-weight: 700; color: var(--tx); }
+        .how-stat-lbl { font-size: 11px; color: var(--mt); margin-top: 2px; }
+
+        /* ── TESTIMONIALS ── */
+        .testi-card {
+            background: var(--card);
+            border: 0.5px solid var(--border);
+            border-radius: var(--radius); padding: 24px;
+            transition: border-color .2s; height: 100%;
+            position: relative;
+        }
+        .testi-card:hover { border-color: var(--ac-mid); }
+        .testi-quote {
+            font-size: 36px; line-height: 1; color: var(--ac-mid);
+            font-family: Georgia, serif; margin-bottom: 4px;
+        }
+        .testi-text { font-size: 14px; color: var(--mt); line-height: 1.7; margin-bottom: 16px; font-style: italic; }
+        .testi-stars { color: var(--warn); font-size: 13px; margin-bottom: 14px; }
+        .testi-footer { display: flex; align-items: center; gap: 12px; border-top: 0.5px solid var(--border); padding-top: 14px; }
+        .testi-avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700; color: #0D1B2A; flex-shrink: 0;
+        }
+        .testi-name { font-size: 13px; font-weight: 600; color: var(--tx); }
+        .testi-loc  { font-size: 11px; color: var(--mt); }
+        .verified-badge {
+            position: absolute; top: 16px; right: 16px;
+            font-size: 9px; font-weight: 700; padding: 3px 8px;
+            border-radius: 8px; background: var(--ac-dim); color: var(--ac);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* rating summary */
+        .rating-box {
+            background: var(--card); border: 0.5px solid var(--border);
+            border-radius: var(--radius); padding: 24px;
+            display: flex; gap: 28px; align-items: center;
+            flex-wrap: wrap; margin-top: 32px;
+        }
+        .rating-big { text-align: center; }
+        .rating-num { font-size: 52px; font-weight: 800; color: var(--ac); font-family: 'Playfair Display', serif; line-height: 1; }
+        .rating-stars { color: var(--warn); font-size: 16px; margin-top: 4px; }
+        .rating-count { font-size: 12px; color: var(--mt); margin-top: 4px; }
+        .rating-bars { flex: 1; min-width: 180px; }
+        .rbar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .rbar-lbl { font-size: 11px; color: var(--mt); width: 12px; text-align: right; }
+        .rbar-bg  { flex: 1; height: 5px; background: rgba(255,255,255,0.06); border-radius: 3px; }
+        .rbar-fill { height: 5px; border-radius: 3px; background: var(--warn); }
+        .rbar-pct { font-size: 10px; color: var(--mt); width: 30px; }
+
+        /* ── SEASONAL BANNER ── */
+        .seasonal-banner {
+            background: linear-gradient(135deg, var(--surf) 0%, #0a2236 100%);
+            border: 0.5px solid var(--border);
+            border-radius: 20px; padding: 40px;
+            position: relative; overflow: hidden;
+        }
+        .seasonal-banner::before {
+            content: '';
+            position: absolute; top: -40px; right: -40px;
+            width: 240px; height: 240px;
+            background: radial-gradient(circle, rgba(0,180,216,0.1), transparent 70%);
+        }
+        .seasonal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .seasonal-item {
+            background: var(--card); border: 0.5px solid var(--border);
+            border-radius: 10px; padding: 14px 16px;
+            display: flex; align-items: center; gap: 12px;
+            transition: border-color .2s;
+        }
+        .seasonal-item:hover { border-color: var(--ac-mid); }
+        .seasonal-emoji { font-size: 28px; }
+        .seasonal-name  { font-size: 13px; font-weight: 600; color: var(--tx); }
+        .seasonal-price { font-size: 12px; color: var(--ac); font-weight: 600; }
+        .seasonal-tag   { font-size: 9px; background: rgba(255,214,10,0.1); color: var(--warn); padding: 2px 7px; border-radius: 6px; margin-top: 2px; display: inline-block; font-weight: 600; }
+
+        /* ── FOOTER ── */
+        footer {
+            background: #060E17;
+            border-top: 0.5px solid var(--border);
+            padding: 56px 0 28px;
+        }
+        .footer-logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px; font-weight: 700; color: var(--ac); margin-bottom: 4px;
+        }
+        .footer-logo-sub { font-size: 11px; color: var(--mt); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
+        .footer-desc { font-size: 13px; color: var(--mt); max-width: 260px; line-height: 1.7; margin-bottom: 20px; }
+        .footer-social { display: flex; gap: 10px; }
+        .social-btn {
+            width: 36px; height: 36px; border-radius: 8px;
+            background: var(--card); border: 0.5px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--mt); font-size: 14px; text-decoration: none;
+            transition: all .2s;
+        }
+        .social-btn:hover { background: var(--ac-dim); color: var(--ac); border-color: var(--ac-mid); }
+        .footer-heading { font-size: 13px; font-weight: 600; color: var(--tx); margin-bottom: 16px; font-family: 'Space Grotesk', sans-serif; letter-spacing: 0.05em; }
+        .footer-links { list-style: none; padding: 0; margin: 0; }
+        .footer-links li { margin-bottom: 10px; }
+        .footer-links a { font-size: 13px; color: var(--mt); text-decoration: none; transition: color .2s; display: flex; align-items: center; gap: 6px; }
+        .footer-links a:hover { color: var(--ac); }
+        .footer-links a i { font-size: 10px; color: var(--ac); }
+        .footer-contact-item { display: flex; gap: 10px; margin-bottom: 12px; font-size: 13px; color: var(--mt); }
+        .footer-contact-item i { color: var(--ac); margin-top: 2px; flex-shrink: 0; }
+        .footer-bottom {
+            border-top: 0.5px solid var(--border);
+            margin-top: 40px; padding-top: 20px;
+            display: flex; justify-content: space-between;
+            align-items: center; flex-wrap: gap;
+            font-size: 12px; color: var(--mt);
+        }
+        .footer-bottom a { 
+            color: var(--mt); 
+            text-decoration: none; 
+        }
+
+        .footer-bottom a:hover { 
+            color: var(--ac); 
+        }
+
+        /* ── BACK TO TOP ── */
+        #backToTop {
+            position: fixed; bottom: 28px; right: 28px;
+            width: 42px; height: 42px; border-radius: 50%;
+            background: var(--ac); color: #0D1B2A;
+            display: none; align-items: center; justify-content: center;
+            font-size: 16px; cursor: pointer; z-index: 999;
+            border: none; box-shadow: 0 4px 16px rgba(0,180,216,0.3);
+            transition: all .2s;
+        }
+        #backToTop:hover { background: #00c8f0; transform: translateY(-2px); }
+        #backToTop.show { display: flex; }
+
+        /* ── TOAST ── */
+        #toast {
+            position: fixed; bottom: 28px; left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--surf); border: 0.5px solid var(--ac-mid);
+            color: var(--tx); padding: 12px 22px; border-radius: 10px;
+            font-size: 13px; font-weight: 500;
+            display: flex; align-items: center; gap: 10px;
+            z-index: 1050; opacity: 0;
+            transition: all .3s; box-shadow: var(--shadow);
+            pointer-events: none;
+        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #toast i { color: var(--success); }
+
+        /* portfolio disclaimer */
+        .portfolio-bar {
+            background: var(--ac-dim); border-top: 0.5px solid var(--ac-mid);
+            padding: 10px 0; text-align: center;
+            font-size: 12px; color: var(--ac);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .portfolio-bar a { color: var(--ac); font-weight: 600; }
+
+        /* back to top */
+        #backToTop {
+            position: fixed; bottom: 28px; right: 28px;
+            width: 42px; height: 42px; border-radius: 50%;
+            background: var(--ac); color: #0D1B2A;
+            display: none; align-items: center; justify-content: center;
+            font-size: 16px; cursor: pointer; z-index: 999;
+            border: none; box-shadow: 0 4px 16px rgba(0,180,216,0.3);
+            transition: all .2s;
+        }
+        #backToTop:hover { background: #00c8f0; transform: translateY(-2px); }
+        #backToTop.show { display: flex; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 991px) {
+            .hero { padding: 60px 0 40px; min-height: auto; }
+            .hero-visual { margin-top: 40px; }
+            .hero-card-main { max-width: 100%; }
+            .stat-divider { display: none; }
+            .stat-item { padding: 10px; }
+            section { padding: 56px 0; }
+        }
+        @media (max-width: 575px) {
+            .hero-title { font-size: 32px; }
+            .hero-btns { flex-direction: column; }
+            .btn-ac, .btn-outline-ac { justify-content: center; }
+            .trust-row { gap: 16px; }
+            .seasonal-grid { grid-template-columns: 1fr; }
+            .rating-box { flex-direction: column; }
+            .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div id="navbar-placeholder"></div>
+
+<!-- Hero -->
+<section class="hero" id="home">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 hero-content">
+                <div class="hero-eyebrow">
+                    <i class="fa fa-snowflake"></i>
+                    100% Organic Cold Storage
+                </div>
+                <h1 class="hero-title">
+                    Farm Fresh,<br>
+                    <span>Cold Stored,</span><br>
+                    Delivered Pure.
+                </h1>
+                <p class="hero-sub">
+                    Premium cold storage that keeps your fruits, vegetables and fresh produce at the perfect temperature — from our farm to your door.
+                </p>
+                <div class="hero-btns">
+                    <a href="products.html" class="btn-ac">
+                        <i class="fa fa-cart-shopping"></i> Shop Now
+                    </a>
+                    <a href="feature.html" class="btn-outline-ac">
+                        <i class="fa fa-info-circle"></i> How It Works
+                    </a>
+                </div>
+                <div class="trust-row">
+                    <div class="trust-item"><i class="fa fa-check-circle"></i> No pesticides</div>
+                    <div class="trust-item"><i class="fa fa-check-circle"></i> Same day delivery</div>
+                    <div class="trust-item"><i class="fa fa-check-circle"></i> 2°C guaranteed</div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 hero-visual">
+                <div class="hero-card-main">
+                    <div class="hero-float-badge">🌿 Certified Organic</div>
+                    <div class="hc-label">Today's Fresh Stock</div>
+
+                    <div class="hc-product-row">
+                        <div class="hc-emoji">🥦</div>
+                        <div>
+                            <div class="hc-name">Brinjal</div>
+                            <span class="hc-badge">ORGANIC</span>
+                        </div>
+                        <div class="hc-price">Rs. 50/kg</div>
+                    </div>
+                    <div class="hc-product-row">
+                        <div class="hc-emoji">🍎</div>
+                        <div>
+                            <div class="hc-name">Apple</div>
+                            <span class="hc-badge">SEASONAL</span>
+                        </div>
+                        <div class="hc-price">Rs. 120/kg</div>
+                    </div>
+                    <div class="hc-product-row">
+                        <div class="hc-emoji">🥕</div>
+                        <div>
+                            <div class="hc-name">Carrot</div>
+                            <span class="hc-badge">ORGANIC</span>
+                        </div>
+                        <div class="hc-price">Rs. 45/kg</div>
+                    </div>
+
+                    <div class="hc-temp-row">
+                        <div>
+                            <div class="hc-temp-val">2°C</div>
+                            <div class="hc-temp-lbl">Storage Temperature</div>
+                        </div>
+                        <div class="hc-temp-status">
+                            <div class="hc-temp-dot"></div>
+                            Optimal
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Strip -->
+<div class="stats-strip">
+    <div class="container">
+        <div class="row text-center g-0 d-flex align-items-stretch">
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-num">32+</div>
+                    <div class="stat-label">Products Available</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-num">2°C</div>
+                    <div class="stat-label">Storage Temperature</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-num">500+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-num">24h</div>
+                    <div class="stat-label">Fresh Delivery</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured products -->
+<section id="products">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+            <div>
+                <div class="section-eyebrow">Fresh Picks</div>
+                <h2 class="section-title mb-0">Featured <span>Products</span></h2>
+                <p class="section-sub mt-2">Handpicked fresh produce from our cold storage — available today.</p>
+            </div>
+            <a href="products.html" class="btn-outline-ac" style="white-space:nowrap;">
+                View All <i class="fa fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <!-- Product 1 -->
+            <div class="col-6 col-lg-3">
+                <div class="prod-card">
+                    <div class="prod-img-wrap">
+                        🥦
+                        <div class="prod-badge-wrap"><span class="badge-organic">ORGANIC</span></div>
+                        <i class="fa fa-heart prod-wish"></i>
+                    </div>
+                    <div class="prod-body">
+                        <div class="prod-name">Brinjal</div>
+                        <div class="prod-price">Rs. 50/kg</div>
+                        <div class="fresh-label">Freshness</div>
+                        <div class="fresh-bar"><div class="fresh-fill" style="width:88%;"></div></div>
+                        <div class="prod-btns">
+                            <a href="product.html?id=brinjal" class="btn-view"><i class="fa fa-eye"></i> View</a>
+                            <button class="btn-add" onclick="addToCart('Brinjal',60,'🥦')"><i class="fa fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="col-6 col-lg-3">
+                <div class="prod-card">
+                    <div class="prod-img-wrap">
+                        🫑
+                        <div class="prod-badge-wrap"><span class="badge-organic">ORGANIC</span></div>
+                        <i class="fa fa-heart prod-wish"></i>
+                    </div>
+                    <div class="prod-body">
+                        <div class="prod-name">Capsicum</div>
+                        <div class="prod-price">Rs. 80/kg</div>
+                        <div class="fresh-label">Freshness</div>
+                        <div class="fresh-bar"><div class="fresh-fill" style="width:92%;"></div></div>
+                        <div class="prod-btns">
+                            <a href="product.html?id=capsicum" class="btn-view"><i class="fa fa-eye"></i> View</a>
+                            <button class="btn-add" onclick="addToCart('Capsicum',80,'🫑')"><i class="fa fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="col-6 col-lg-3">
+                <div class="prod-card">
+                    <div class="prod-img-wrap">
+                        🍎
+                        <div class="prod-badge-wrap"><span class="badge-seasonal">SEASONAL</span></div>
+                        <i class="fa fa-heart prod-wish"></i>
+                    </div>
+                    <div class="prod-body">
+                        <div class="prod-name">Apple</div>
+                        <div class="prod-price">Rs. 120/kg</div>
+                        <div class="fresh-label">Freshness</div>
+                        <div class="fresh-bar"><div class="fresh-fill" style="width:75%;"></div></div>
+                        <div class="prod-btns">
+                            <a href="product.html?id=apple" class="btn-view"><i class="fa fa-eye"></i> View</a>
+                            <button class="btn-add" onclick="addToCart('Apple',120,'🍎')"><i class="fa fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 4 -->
+            <div class="col-6 col-lg-3">
+                <div class="prod-card">
+                    <div class="prod-img-wrap">
+                        🫐
+                        <div class="prod-badge-wrap"><span class="badge-organic">FRESH</span></div>
+                        <i class="fa fa-heart prod-wish"></i>
+                    </div>
+                    <div class="prod-body">
+                        <div class="prod-name">Blueberry</div>
+                        <div class="prod-price">Rs. 400/box</div>
+                        <div class="fresh-label">Freshness</div>
+                        <div class="fresh-bar"><div class="fresh-fill" style="width:95%;"></div></div>
+                        <div class="prod-btns">
+                            <a href="product.html?id=blueberry" class="btn-view"><i class="fa fa-eye"></i> View</a>
+                            <button class="btn-add" onclick="addToCart('Blueberry',400,'🫐')"><i class="fa fa-cart-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WHY CHOOSE US -->
+<section class="section-alt" id="features">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-eyebrow">Our Promise</div>
+            <h2 class="section-title">Why Choose <span>Fresh & Organic</span></h2>
+            <p class="section-sub mx-auto">We don't just store produce — we preserve its nutrition, taste and freshness at every step.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-6 col-lg-3">
+                <div class="why-card">
+                    <div class="why-icon"><i class="fa fa-snowflake"></i></div>
+                    <div class="why-title">Cold Storage at 2°C</div>
+                    <div class="why-desc">Maintained precisely at 2°C to keep produce farm-fresh for longer without any preservatives.</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="why-card">
+                    <div class="why-icon"><i class="fa fa-leaf"></i></div>
+                    <div class="why-title">100% Organic</div>
+                    <div class="why-desc">Every product is certified organic — no pesticides, no chemicals, no compromise on your health.</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="why-card">
+                    <div class="why-icon"><i class="fa fa-truck"></i></div>
+                    <div class="why-title">Same Day Delivery</div>
+                    <div class="why-desc">Order before noon and get fresh produce delivered to your doorstep the same day.</div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="why-card">
+                    <div class="why-icon"><i class="fa fa-shield-alt"></i></div>
+                    <div class="why-title">Quality Guarantee</div>
+                    <div class="why-desc">Not satisfied? We'll replace or refund — no questions asked. Your freshness is our responsibility.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How it works + Seasonal -->
+<section id="how">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-6">
+                <div class="section-eyebrow">The Process</div>
+                <h2 class="section-title">From Farm to <span>Your Door</span></h2>
+                <p class="section-sub mb-4">Every product goes through a careful cold chain — so what arrives at your door is exactly what left the farm.</p>
+
+                <div class="how-step">
+                    <div class="how-num">01</div>
+                    <div>
+                        <div class="how-title">Harvested Fresh</div>
+                        <div class="how-desc">Produce is harvested directly from certified organic farms in Maharashtra.</div>
+                    </div>
+                </div>
+                <div class="how-step">
+                    <div class="how-num">02</div>
+                    <div>
+                        <div class="how-title">Cold Stored at 2°C</div>
+                        <div class="how-desc">Immediately transferred to our temperature-controlled cold storage facility.</div>
+                    </div>
+                </div>
+                <div class="how-step">
+                    <div class="how-num">03</div>
+                    <div>
+                        <div class="how-title">Quality Checked</div>
+                        <div class="how-desc">Every batch is inspected for freshness, weight, and organic certification before dispatch.</div>
+                    </div>
+                </div>
+                <div class="how-step" style="margin-bottom:0;">
+                    <div class="how-num">04</div>
+                    <div>
+                        <div class="how-title">Delivered to You</div>
+                        <div class="how-desc">Packed in insulated packaging and dispatched within hours of your order.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="how-visual">
+                    <div class="how-temp-big">2°C</div>
+                    <div class="how-temp-sub">Constant cold chain temperature</div>
+                    <div class="how-stat-row">
+                        <div class="how-stat">
+                            <div class="how-stat-val">32+</div>
+                            <div class="how-stat-lbl">Products in stock</div>
+                        </div>
+                        <div class="how-stat">
+                            <div class="how-stat-val">98%</div>
+                            <div class="how-stat-lbl">Freshness retained</div>
+                        </div>
+                        <div class="how-stat">
+                            <div class="how-stat-val">0</div>
+                            <div class="how-stat-lbl">Preservatives used</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Seasonal products banner -->
+<section class="section-alt">
+    <div class="container">
+        <div class="seasonal-banner">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-4">
+                    <div class="section-eyebrow">Right Now in Season</div>
+                    <h2 class="section-title mb-3">What's <span>Fresh</span> This Month</h2>
+                    <p class="section-sub mb-4">Seasonal produce is at its freshest, most nutritious and most affordable. Don't miss what's in stock today.</p>
+                    <a href="products.html?category=seasonal" class="btn-ac">
+                        <i class="fa fa-seedling"></i> Shop Seasonal
+                    </a>
+                </div>
+                <div class="col-lg-8">
+                    <div class="seasonal-grid">
+                        <div class="seasonal-item">
+                            <div class="seasonal-emoji">🥭</div>
+                            <div>
+                                <div class="seasonal-name">Mango</div>
+                                <div class="seasonal-price">Rs. 80/kg</div>
+                                <span class="seasonal-tag">IN SEASON</span>
+                            </div>
+                        </div>
+                        <div class="seasonal-item">
+                            <div class="seasonal-emoji">🍉</div>
+                            <div>
+                                <div class="seasonal-name">Watermelon</div>
+                                <div class="seasonal-price">Rs. 60/piece</div>
+                                <span class="seasonal-tag">IN SEASON</span>
+                            </div>
+                        </div>
+                        <div class="seasonal-item">
+                            <div class="seasonal-emoji">🍓</div>
+                            <div>
+                                <div class="seasonal-name">Strawberry</div>
+                                <div class="seasonal-price">Rs. 250/box</div>
+                                <span class="seasonal-tag">IN SEASON</span>
+                            </div>
+                        </div>
+                        <div class="seasonal-item">
+                            <div class="seasonal-emoji">🍏</div>
+                            <div>
+                                <div class="seasonal-name">Custard Apple</div>
+                                <div class="seasonal-price">Rs. 120/kg</div>
+                                <span class="seasonal-tag">IN SEASON</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonial -->
+<section id="testimonial">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-eyebrow">Customer Reviews</div>
+            <h2 class="section-title">What Our <span>Customers Say</span></h2>
+            <p class="section-sub mx-auto">Trusted by 500+ happy customers across Maharashtra.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="testi-card">
+                    <span class="verified-badge">✓ Verified</span>
+                    <div class="testi-quote">"</div>
+                    <div class="testi-stars">★★★★★</div>
+                    <div class="testi-text">Vegetables are always fresh. The brinjal and capsicum I ordered last week were absolutely farm-fresh. Will definitely order again every week!</div>
+                    <div class="testi-footer">
+                        <div class="testi-avatar" style="background:#00B4D8;">PS</div>
+                        <div>
+                            <div class="testi-name">Priya Sharma</div>
+                            <div class="testi-loc">Pune, Maharashtra</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testi-card">
+                    <span class="verified-badge">✓ Verified</span>
+                    <div class="testi-quote">"</div>
+                    <div class="testi-stars">★★★★★</div>
+                    <div class="testi-text">Cold storage quality is excellent. Fruits stay fresh for days after delivery. Best organic store in the area — highly recommend to everyone.</div>
+                    <div class="testi-footer">
+                        <div class="testi-avatar" style="background:#06D6A0;">RK</div>
+                        <div>
+                            <div class="testi-name">Rahul Kulkarni</div>
+                            <div class="testi-loc">Sambhaji Nagar, Maharashtra</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testi-card">
+                    <span class="verified-badge">✓ Verified</span>
+                    <div class="testi-quote">"</div>
+                    <div class="testi-stars">★★★★☆</div>
+                    <div class="testi-text">Great variety of seasonal fruits. Delivery is fast and packaging keeps everything cold and fresh. Very satisfied with every order so far.</div>
+                    <div class="testi-footer">
+                        <div class="testi-avatar" style="background:#F4A261;">AM</div>
+                        <div>
+                            <div class="testi-name">Anjali More</div>
+                            <div class="testi-loc">Nashik, Maharashtra</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rating summary -->
+        <div class="rating-box">
+            <div class="rating-big">
+                <div class="rating-num">4.8</div>
+                <div class="rating-stars">★★★★★</div>
+                <div class="rating-count">Overall Rating</div>
+            </div>
+            <div class="rating-bars">
+                <div class="rbar-row"><span class="rbar-lbl">5</span><div class="rbar-bg"><div class="rbar-fill" style="width:82%;"></div></div><span class="rbar-pct">82%</span></div>
+                <div class="rbar-row"><span class="rbar-lbl">4</span><div class="rbar-bg"><div class="rbar-fill" style="width:12%;"></div></div><span class="rbar-pct">12%</span></div>
+                <div class="rbar-row"><span class="rbar-lbl">3</span><div class="rbar-bg"><div class="rbar-fill" style="width:4%;"></div></div><span class="rbar-pct">4%</span></div>
+                <div class="rbar-row"><span class="rbar-lbl">2</span><div class="rbar-bg"><div class="rbar-fill" style="width:1%;"></div></div><span class="rbar-pct">1%</span></div>
+                <div class="rbar-row"><span class="rbar-lbl">1</span><div class="rbar-bg"><div class="rbar-fill" style="width:1%;"></div></div><span class="rbar-pct">1%</span></div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-size:32px;font-weight:700;color:var(--tx);font-family:'Playfair Display',serif;">50</div>
+                <div style="font-size:12px;color:var(--mt);">Total Reviews</div>
+            </div>
+            <a href="testimonial.html" class="btn-outline-ac ms-auto align-self-center" style="white-space:nowrap;">
+                Read All Reviews <i class="fa fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row g-5">
+            <!-- Brand -->
+            <div class="col-lg-4">
+                <div class="footer-logo-text">🌿 Fresh & Organic</div>
+                <div class="footer-logo-sub">Cold Storage</div>
+                <p class="footer-desc">Premium cold storage for organic fruits, vegetables and fresh produce. Farm-fresh, pesticide-free, delivered to your door.</p>
+                <div class="footer-social">
+                    <a href="https://github.com/Sujal-0803" class="social-btn"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/sujalmaru0803" class="social-btn"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.instagram.com/sujalll._24" class="social-btn"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/7972891795" class="social-btn"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-6 col-lg-2">
+                <div class="footer-heading">Quick Links</div>
+                <ul class="footer-links">
+                    <li><a href="index.html"><i class="fa fa-chevron-right"></i> Home</a></li>
+                    <li><a href="about.html"><i class="fa fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="products.html"><i class="fa fa-chevron-right"></i> Products</a></li>
+                    <li><a href="feature.html"><i class="fa fa-chevron-right"></i> Features</a></li>
+                    <li><a href="testimonial.html"><i class="fa fa-chevron-right"></i> Testimonials</a></li>
+                </ul>
+            </div>
+
+            <!-- My Account -->
+            <div class="col-6 col-lg-2">
+                <div class="footer-heading">My Account</div>
+                <ul class="footer-links">
+                    <li><a href="login.html"><i class="fa fa-chevron-right"></i> Login</a></li>
+                    <li><a href="register.html"><i class="fa fa-chevron-right"></i> Register</a></li>
+                    <li><a href="profile.html"><i class="fa fa-chevron-right"></i> My Profile</a></li>
+                    <li><a href="orders.html"><i class="fa fa-chevron-right"></i> My Orders</a></li>
+                    <li><a href="cart.html"><i class="fa fa-chevron-right"></i> My Cart</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div class="col-lg-4">
+                <div class="footer-heading">Contact Us</div>
+                <div class="footer-contact-item">
+                    <i class="fa fa-map-marker-alt"></i>
+                    <span>Pune, Maharashtra, India</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fa fa-phone"></i>
+                    <span>+91 79728 91795</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fa fa-envelope"></i>
+                    <span>sujalmaru2004@gmail.com</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fa fa-clock"></i>
+                    <span>Mon – Sat: 9:00 AM – 6:00 PM</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 Fresh &amp; Organic Cold Storage — Personal Portfolio Project by <strong style="color:var(--ac);">Sujal Maru</strong></span>
+            <span>
+                <a href="#">Privacy Policy</a> &nbsp;·&nbsp;
+                <a href="#">Terms of Service</a>
+            </span>
+        </div>
+    </div>
+</footer>
+
+<!-- Portfolio disclaimer bar -->
+<div class="portfolio-bar">
+    ⚡ Personal portfolio project — Built by <a href="contact.html">Sujal Maru</a>, Pune
+</div>
+
+<!-- BACK TO TOP -->
+<button id="backToTop" aria-label="Back to top"><i class="fa fa-arrow-up"></i></button>
+
+<!-- TOAST -->
+<div id="toast"><i class="fa fa-check-circle"></i> <span id="toastMsg">Added to cart!</span></div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Navbar (Firebase auth + inject) -->
+<script type="module" src="js/navbar.js"></script>
+
+<script>
+    /* ── Cart ── */
+    function addToCart(name, price, emoji) {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const idx = cart.findIndex(i => i.name === name);
+        if (idx > -1) {
+            cart[idx].quantity++;
+        } else {
+            cart.push({ name, price, emoji, quantity: 1 });
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+
+        /* update badge */
+        const total = cart.reduce((s, i) => s + i.quantity, 0);
+        document.querySelectorAll('.cart-count-badge').forEach(el => el.textContent = total);
+
+        /* show toast */
+        const toast = document.getElementById('toast');
+        document.getElementById('toastMsg').textContent = name + ' added to cart!';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    /* ── Back to top ── */
+    const btn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        btn.classList.toggle('show', window.scrollY > 400);
+    });
+    btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    /* ── Scroll reveal (lightweight) ── */
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.style.opacity = '1';
+                e.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.prod-card, .why-card, .testi-card, .how-step, .seasonal-item').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity .5s ease, transform .5s ease';
+        observer.observe(el);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Products | Fresh & Organic Cold Storage</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg:     #0D1B2A;
+            --surf:   #122234;
+            --card:   #1A2F42;
+            --ac:     #00B4D8;
+            --ac-dim: rgba(0,180,216,0.10);
+            --ac-mid: rgba(0,180,216,0.22);
+            --tx:     #E8F5E9;
+            --mt:     #8FAABF;
+            --border: rgba(0,180,216,0.14);
+            --success:#06D6A0;
+            --warn:   #FFD60A;
+            --danger: #FF6B6B;
+            --radius: 14px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { background:var(--bg); color:var(--tx); font-family:'Inter',sans-serif; font-size:15px; overflow-x:hidden; }
+
+        /* ── NAVBAR (injected by navbar.js) ── */
+        #navbar-placeholder .navbar {
+            background: var(--surf) !important;
+            border-bottom: 0.5px solid var(--border);
+            padding: 0 !important;
+        }
+        #navbar-placeholder .navbar-brand h2 { 
+            font-size: 18px; 
+            color: var(--ac); 
+        }
+
+        #navbar-placeholder .navbar-brand small { 
+            color: var(--mt); 
+            font-size: 10px; 
+            letter-spacing: 0.12em; 
+        }
+
+        #navbar-placeholder .nav-link { 
+            color: var(--mt) !important; 
+            font-size: 15px; 
+            font-weight: 500; 
+            padding: 1.1rem 0.65rem !important; 
+            transition: color .2s; 
+            font-family: 'Inter', sans-serif; 
+            letter-spacing: 0.01em; 
+        }
+
+        #navbar-placeholder .nav-link:hover,
+        #navbar-placeholder .nav-link.active { 
+            color: var(--ac) !important; 
+        }
+
+        #navbar-placeholder .custom-btn { 
+            background: var(--ac) !important; 
+            color: #0D1B2A !important; 
+            font-weight: 600; 
+            order: none; 
+            border-radius: 8px; 
+        }
+
+        #navbar-placeholder .navbar-toggler { 
+            border-color: var(--border); 
+        }
+
+        #navbar-placeholder .navbar-toggler-icon { 
+            filter: invert(1); 
+        }
+
+        #navbar-placeholder .logo-icon { 
+            width: 36px; 
+            height: 36px; 
+            background: var(--ac-dim); 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: var(--ac); 
+            font-size: 16px; 
+            margin-right: 10px; 
+        }
+
+        #navbar-placeholder .logo-text h2 { 
+            color: var(--ac); 
+        }
+
+        #navbar-placeholder .bg-light { 
+            background: var(--card) !important; 
+        }
+
+        #navbar-placeholder .text-dark { 
+            color: var(--mt) !important; 
+        }
+
+        #navbar-placeholder .search-box {
+            position: absolute; top: calc(100% + 10px); right: 0;
+            width: 280px; background: var(--surf);
+            border: 0.5px solid var(--border); border-radius: var(--radius);
+            padding: 10px; z-index: 1000; box-shadow: var(--shadow);
+        }
+        #navbar-placeholder .search-box .form-control {
+            background: var(--card); border: 0.5px solid var(--border);
+            color: var(--tx); border-radius: 8px; font-size: 13px;
+        }
+        #navbar-placeholder .search-box .form-control::placeholder { color: var(--mt); }
+        #navbar-placeholder .dropdown-menu {
+            background: var(--surf); border: 0.5px solid var(--border) !important;
+            border-radius: var(--radius) !important;
+        }
+        #navbar-placeholder .dropdown-item { 
+            color: var(--tx); 
+            font-size: 13px; 
+        }
+
+        #navbar-placeholder .dropdown-item:hover { 
+            background: var(--ac-dim); 
+            color: var(--ac); 
+        }
+
+        #navbar-placeholder .dropdown-item.text-danger { 
+            color: var(--danger) !important; 
+        }
+
+        #navbar-placeholder .dropdown-divider { 
+            border-color: var(--border); 
+        }
+
+        #navbar-placeholder .cart-count-badge { 
+            font-size: 9px !important; 
+        }
+
+        /* ── BREADCRUMB ── */
+        .breadcrumb-row {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 12px; color: var(--mt); margin-bottom: 24px;
+        }
+        .breadcrumb-row a { color: var(--ac); text-decoration: none; }
+        .breadcrumb-row i { font-size:9px; }
+
+        /* ── PILL TABS ── */
+        .tab-pills { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; padding:30px 0 0; }
+        .tab-pill { font-size:13px; font-weight:600; padding:9px 26px; border-radius:30px; border:1.5px solid var(--ac-mid); color:var(--mt); background:transparent; cursor:pointer; font-family:'Space Grotesk',sans-serif; transition:all .2s; letter-spacing:0.02em; }
+        .tab-pill:hover { color:var(--ac); border-color:var(--ac); background:var(--ac-dim); }
+        .tab-pill.active { background:var(--ac); color:#0D1B2A; border-color:var(--ac); box-shadow:0 4px 16px rgba(0,180,216,0.25); }
+
+        /* ── PAGE HEADER ── */
+        .page-header { background:var(--bg); padding:52px 0 0; text-align:center; position:relative; overflow:hidden; }
+        .page-header::before { content:''; position:absolute; inset:0; background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px); background-size:48px 48px; opacity:0.35; }
+        .page-header::after { content:''; position:absolute; top:0; right:0; width:500px; height:100%; background:radial-gradient(ellipse at right,rgba(0,180,216,0.07),transparent 70%); pointer-events:none; }
+        .page-header .container { position:relative; z-index:1; }
+        .page-header-icon { font-size:44px; color:var(--ac); margin-bottom:14px; display:block; }
+        .page-title { font-family:'Playfair Display',serif; font-size:38px; font-weight:800; color:var(--tx); margin:0 0 12px; }
+        .page-divider { width:56px; height:3px; background:var(--ac); border:none; margin:0 auto 16px; border-radius:2px; }
+        .page-sub { font-size:14px; color:var(--mt); }
+
+        /* ── LAYOUT ── */
+        .main-layout { display:flex; gap:24px; align-items:flex-start; padding:32px 0 48px; }
+
+        /* ── SIDEBAR ── */
+        .sidebar { width:260px; flex-shrink:0; display:flex; flex-direction:column; gap:16px; position:sticky; top:20px; }
+        .sb-card { background:var(--surf); border:0.5px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+        .sb-head { display:flex; align-items:center; gap:10px; padding:14px 18px; border-bottom:0.5px solid var(--border); background:linear-gradient(90deg, var(--card) 0%, #162b3e 100%); }
+        .sb-head-icon { width:30px; height:30px; border-radius:8px; background:var(--ac-dim); border:0.5px solid var(--ac-mid); display:flex; align-items:center; justify-content:center; color:var(--ac); font-size:13px; flex-shrink:0; }
+        .sb-head-title { font-size:13px; font-weight:700; color:var(--tx); font-family:'Space Grotesk',sans-serif; letter-spacing:0.03em; }
+        .sb-body { padding:18px; }
+
+        /* Seasonal Products */
+        .seasonal-item { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:0.5px solid rgba(255,255,255,0.04); cursor:pointer; transition:all .15s; }
+        .seasonal-item:last-child { border:none; padding-bottom:0; }
+        .seasonal-item:hover { opacity:0.82; transform:translateX(3px); }
+        .seasonal-emoji { font-size:22px; width:36px; text-align:center; flex-shrink:0; }
+        .seasonal-info { flex:1; }
+        .seasonal-name  { font-size:12px; font-weight:600; color:var(--tx); }
+        .seasonal-price { font-size:11px; color:var(--ac); font-weight:600; }
+        .seasonal-tag   { font-size:8px; font-weight:700; padding:1px 6px; border-radius:6px; background:rgba(255,214,10,0.1); color:var(--warn); font-family:'Space Grotesk',sans-serif; }
+
+        /* Price Range */
+        .price-display { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; gap:8px; }
+        .price-tag { background:var(--card); border:0.5px solid var(--border); border-radius:8px; padding:6px 12px; font-size:13px; font-weight:700; color:var(--ac); font-family:'Space Grotesk',sans-serif; flex:1; text-align:center; }
+        .price-sep { font-size:11px; color:var(--mt); flex-shrink:0; }
+        .slider-wrap { position:relative; height:28px; margin:4px 0 6px; }
+        .slider-track { position:absolute; top:50%; transform:translateY(-50%); height:5px; width:100%; border-radius:3px; background:var(--card); }
+        .slider-fill { position:absolute; top:50%; transform:translateY(-50%); height:5px; background:var(--ac); border-radius:3px; pointer-events:none; }
+        .range-input { position:absolute; top:50%; transform:translateY(-50%); width:100%; appearance:none; background:transparent; pointer-events:none; height:5px; outline:none; }
+        .range-input::-webkit-slider-thumb { appearance:none; width:18px; height:18px; border-radius:50%; background:var(--ac); cursor:pointer; pointer-events:all; border:3px solid var(--surf); box-shadow:0 2px 8px rgba(0,180,216,0.4); transition:box-shadow .15s; }
+        .range-input::-webkit-slider-thumb:hover { box-shadow:0 2px 14px rgba(0,180,216,0.6); }
+        .range-input::-moz-range-thumb { width:18px; height:18px; border-radius:50%; background:var(--ac); cursor:pointer; pointer-events:all; border:3px solid var(--surf); box-shadow:0 2px 8px rgba(0,180,216,0.4); }
+        .price-ticks { display:flex; justify-content:space-between; font-size:10px; color:var(--mt); margin-bottom:14px; }
+        .apply-btn { width:100%; padding:9px; background:var(--ac); color:#0D1B2A; font-size:12px; font-weight:700; border:none; border-radius:9px; cursor:pointer; font-family:'Space Grotesk',sans-serif; letter-spacing:0.04em; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:6px; }
+        .apply-btn:hover { background:#00c8f0; box-shadow:0 4px 16px rgba(0,180,216,0.3); }
+        .reset-link { display:block; text-align:center; font-size:11px; color:var(--mt); margin-top:8px; cursor:pointer; transition:color .15s; background:none; border:none; width:100%; font-family:'Inter',sans-serif; }
+        .reset-link:hover { color:var(--ac); }
+        .active-filter { display:none; align-items:center; gap:6px; background:var(--ac-dim); border:0.5px solid var(--ac-mid); border-radius:20px; padding:4px 10px 4px 12px; font-size:11px; color:var(--ac); font-weight:600; margin-top:10px; font-family:'Space Grotesk',sans-serif; }
+        .active-filter.show { display:flex; }
+        .active-filter button { background:none; border:none; color:var(--ac); font-size:12px; cursor:pointer; padding:0; line-height:1; }
+
+        /* Today's Deals */
+        .deal-item { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:0.5px solid rgba(255,255,255,0.05); cursor:pointer; transition:all .15s; border-radius:4px; }
+        .deal-item:last-child { border:none; padding-bottom:0; }
+        .deal-item:hover { opacity:0.82; transform:translateX(3px); }
+        .deal-emoji { font-size:20px; width:38px; height:38px; background:var(--card); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:0.5px solid var(--border); }
+        .deal-name  { font-size:12px; font-weight:600; color:var(--tx); margin-bottom:3px; }
+        .deal-prices { display:flex; align-items:center; gap:6px; }
+        .deal-old   { font-size:11px; color:var(--mt); text-decoration:line-through; }
+        .deal-new   { font-size:12px; font-weight:700; color:var(--ac); }
+        .deal-off   { font-size:9px; font-weight:700; padding:1px 6px; border-radius:6px; background:rgba(255,107,107,0.12); color:var(--danger); }
+
+        /* ── PRODUCTS AREA ── */
+        .products-area { flex:1; min-width:0; }
+        .sort-bar { display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--surf); border:0.5px solid var(--border); border-radius:var(--radius); margin-bottom:24px; flex-wrap:wrap; }
+        .sort-bar label { font-size:12px; color:var(--mt); white-space:nowrap; }
+        .sort-select { background:var(--card); border:0.5px solid var(--border); color:var(--tx); font-size:12px; padding:5px 12px; border-radius:8px; outline:none; cursor:pointer; font-family:'Inter',sans-serif; }
+        .sort-select option { background:var(--card); }
+        .result-count { margin-left:auto; font-size:12px; color:var(--ac); font-weight:600; font-family:'Space Grotesk',sans-serif; }
+
+        /* ── SKELETON LOADER ── */
+        .skeleton { background:linear-gradient(90deg, var(--card) 25%, var(--surf) 50%, var(--card) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:var(--radius); }
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+        .skeleton-card { height:280px; margin-bottom:0; }
+
+        /* ── PRODUCT CARD ── */
+        .prod-card { background:var(--card); border:0.5px solid var(--border); border-radius:var(--radius); overflow:hidden; height:100%; transition:transform .22s, box-shadow .22s, border-color .22s; }
+        .prod-card:hover { transform:translateY(-5px); box-shadow:0 16px 44px rgba(0,180,216,0.13); border-color:var(--ac-mid); }
+        .prod-img-wrap { position:relative; background:var(--surf); overflow:hidden; }
+        .prod-img-wrap img { width:100%; height:185px; object-fit:cover; display:block; transition:transform .32s; }
+        .prod-card:hover .prod-img-wrap img { transform:scale(1.05); }
+        .fresh-badge { position:absolute; top:10px; left:10px; background:var(--ac); color:#0D1B2A; font-size:9px; font-weight:800; padding:3px 10px; border-radius:6px; font-family:'Space Grotesk',sans-serif; letter-spacing:0.06em; }
+        .prod-body { padding:16px 14px; text-align:center; }
+        .prod-name { font-size:14px; font-weight:600; color:var(--tx); margin-bottom:5px; text-decoration:none; display:block; font-family:'Space Grotesk',sans-serif; transition:color .15s; }
+        .prod-name:hover { color:var(--ac); }
+        .prod-price { font-size:14px; font-weight:700; color:var(--ac); margin-bottom:13px; }
+        .prod-btns { display:flex; justify-content:center; gap:8px; }
+        .btn-view { padding:7px 16px; font-size:12px; font-weight:500; border:1px solid var(--ac-mid); color:var(--ac); border-radius:8px; background:transparent; text-decoration:none; display:inline-flex; align-items:center; gap:5px; transition:background .15s; }
+        .btn-view:hover { background:var(--ac-dim); color:var(--ac); }
+        .btn-add { padding:7px 16px; font-size:12px; font-weight:700; background:var(--ac); color:#0D1B2A; border-radius:8px; border:none; display:inline-flex; align-items:center; gap:5px; cursor:pointer; transition:background .15s; }
+        .btn-add:hover { background:#00c8f0; }
+
+        /* ── EMPTY STATE ── */
+        .empty-state { text-align:center; padding:60px 20px; color:var(--mt); font-size:14px; }
+        .empty-state i { font-size:42px; display:block; margin-bottom:12px; color:var(--border); }
+        .empty-state strong { color:var(--tx); display:block; font-size:16px; margin-bottom:6px; }
+
+        /* ── TOAST ── */
+        #toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(12px); background:var(--surf); border:0.5px solid var(--ac-mid); color:var(--tx); padding:12px 22px; border-radius:10px; font-size:13px; font-weight:500; display:flex; align-items:center; gap:10px; z-index:1050; opacity:0; transition:all .3s; pointer-events:none; box-shadow:0 4px 24px rgba(0,0,0,0.35); white-space:nowrap; }
+        #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+        #toast i { color:var(--success); }
+
+        /* ── BACK TO TOP ── */
+        #backToTop { position:fixed; bottom:28px; right:28px; width:44px; height:44px; border-radius:50%; background:var(--ac); color:#0D1B2A; display:none; align-items:center; justify-content:center; font-size:16px; cursor:pointer; z-index:999; border:none; box-shadow:0 4px 16px rgba(0,180,216,0.3); transition:all .2s; }
+        #backToTop:hover { background:#00c8f0; transform:translateY(-2px); }
+        #backToTop.show { display:flex; }
+
+        /* ── FOOTER ── */
+        footer { background:#060E17; border-top:0.5px solid var(--border); padding:56px 0 28px; }
+        .footer-logo-text { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--ac); margin-bottom:4px; }
+        .footer-logo-sub  { font-size:11px; color:var(--mt); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:16px; }
+        .footer-desc { font-size:13px; color:var(--mt); max-width:260px; line-height:1.7; margin-bottom:20px; }
+        .footer-social { display:flex; gap:10px; }
+        .social-btn { width:36px; height:36px; border-radius:8px; background:var(--card); border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--mt); font-size:14px; text-decoration:none; transition:all .2s; }
+        .social-btn:hover { background:var(--ac-dim); color:var(--ac); border-color:var(--ac-mid); }
+        .footer-heading { font-size:13px; font-weight:600; color:var(--tx); margin-bottom:16px; font-family:'Space Grotesk',sans-serif; }
+        .footer-links { list-style:none; padding:0; margin:0; }
+        .footer-links li { margin-bottom:10px; }
+        .footer-links a { font-size:13px; color:var(--mt); text-decoration:none; transition:color .2s; display:flex; align-items:center; gap:6px; }
+        .footer-links a:hover { color:var(--ac); }
+        .footer-links a i { font-size:10px; color:var(--ac); }
+        .footer-contact-item { display:flex; gap:10px; margin-bottom:12px; font-size:13px; color:var(--mt); }
+        .footer-contact-item i { color:var(--ac); margin-top:2px; flex-shrink:0; }
+        .footer-bottom { border-top:0.5px solid var(--border); margin-top:40px; padding-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px; color:var(--mt); }
+        .footer-bottom a { color:var(--mt); text-decoration:none; }
+        .footer-bottom a:hover { color:var(--ac); }
+        .portfolio-bar { background:var(--ac-dim); border-top:0.5px solid var(--ac-mid); padding:10px 0; text-align:center; font-size:12px; color:var(--ac); font-family:'Space Grotesk',sans-serif; }
+        .portfolio-bar a { color:var(--ac); font-weight:600; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width:991px) { .main-layout { flex-direction:column; } .sidebar { width:100%; position:static; } }
+        @media (max-width:575px) { .tab-pills { gap:6px; } .tab-pill { font-size:12px; padding:7px 16px; } .sort-bar { flex-direction:column; align-items:flex-start; } .result-count { margin-left:0; } }
+    </style>
+</head>
+<body>
+
+<div id="navbar-placeholder"></div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+    <div class="container">
+        <div class="breadcrumb-row">
+            <a href="index.html">Home</a>
+            <i class="fa fa-chevron-right"></i>
+            <span>Products</span>
+        </div>
+        <i class="fa fa-seedling page-header-icon"></i>
+        <h1 class="page-title">Our Products</h1>
+        <hr class="page-divider" />
+        <p class="page-sub">Fresh, Healthy &amp; Organic Vegetables and Fruits</p>
+        <div class="tab-pills">
+            <button class="tab-pill active" data-tab="vegetables">🥦 Vegetables</button>
+            <button class="tab-pill" data-tab="fruits">🍎 Fruits</button>
+            <button class="tab-pill" data-tab="fresh">✨ Fresh Products</button>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+    <div class="main-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <!-- 1. Price Range -->
+            <div class="sb-card">
+                <div class="sb-head">
+                    <div class="sb-head-icon"><i class="fa fa-sliders-h"></i></div>
+                    <div class="sb-head-title">Filter by Price</div>
+                </div>
+                <div class="sb-body">
+                    <div class="price-display">
+                        <div class="price-tag" id="minLabel">Rs. 0</div>
+                        <span class="price-sep">—</span>
+                        <div class="price-tag" id="maxLabel">Rs. 500</div>
+                    </div>
+                    <div class="slider-wrap">
+                        <div class="slider-track"></div>
+                        <div class="slider-fill" id="sliderFill"></div>
+                        <input type="range" class="range-input" id="minSlider" min="0" max="500" value="0" step="5">
+                        <input type="range" class="range-input" id="maxSlider" min="0" max="500" value="500" step="5">
+                    </div>
+                    <div class="price-ticks">
+                        <span>Rs. 0</span>
+                        <span>Rs. 125</span>
+                        <span>Rs. 250</span>
+                        <span>Rs. 375</span>
+                        <span>Rs. 500</span>
+                    </div>
+                    <button class="apply-btn" onclick="applyPriceFilter()">
+                        <i class="fa fa-check"></i> Show Products
+                    </button>
+                    <button class="reset-link" onclick="resetPriceFilter()">Reset filter</button>
+                    <div class="active-filter" id="activeFilterPill">
+                        <span id="activeFilterText"></span>
+                        <button onclick="resetPriceFilter()" aria-label="Remove filter">✕</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Today's Deals -->
+            <div class="sb-card">
+                <div class="sb-head">
+                    <div class="sb-head-icon"><i class="fa fa-tag"></i></div>
+                    <div class="sb-head-title">Today's Deals</div>
+                </div>
+                <div class="sb-body">
+                    <div class="deal-item" onclick="filterByName('Mango','fresh')">
+                        <div class="deal-emoji">🥭</div>
+                        <div>
+                            <div class="deal-name">Mango</div>
+                            <div class="deal-prices">
+                                <span class="deal-old">Rs. 120</span>
+                                <span class="deal-new">Rs. 80</span>
+                                <span class="deal-off">−33%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="deal-item" onclick="filterByName('Grapes','fruits')">
+                        <div class="deal-emoji">🍇</div>
+                        <div>
+                            <div class="deal-name">Grapes</div>
+                            <div class="deal-prices">
+                                <span class="deal-old">Rs. 100</span>
+                                <span class="deal-new">Rs. 70</span>
+                                <span class="deal-off">−30%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="deal-item" onclick="filterByName('Beetroot','fresh')">
+                        <div class="deal-emoji">🫀</div>
+                        <div>
+                            <div class="deal-name">Beetroot</div>
+                            <div class="deal-prices">
+                                <span class="deal-old">Rs. 70</span>
+                                <span class="deal-new">Rs. 50</span>
+                                <span class="deal-off">−30%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="deal-item" onclick="filterByName('Lemon','fruits')">
+                        <div class="deal-emoji">🍋</div>
+                        <div>
+                            <div class="deal-name">Lemon</div>
+                            <div class="deal-prices">
+                                <span class="deal-old">Rs. 60</span>
+                                <span class="deal-new">Rs. 40</span>
+                                <span class="deal-off">−33%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Seasonal Products -->
+            <div class="sb-card">
+                <div class="sb-head">
+                    <div class="sb-head-icon"><i class="fa fa-sun"></i></div>
+                    <div class="sb-head-title">Seasonal Products</div>
+                </div>
+                <div class="sb-body">
+                    <div class="seasonal-item" onclick="filterByName('Mango','fresh')">
+                        <div class="seasonal-emoji">🥭</div>
+                        <div class="seasonal-info">
+                            <div class="seasonal-name">Mango</div>
+                            <div class="seasonal-price">Rs. 80/kg</div>
+                        </div>
+                        <span class="seasonal-tag">IN SEASON</span>
+                    </div>
+                    <div class="seasonal-item" onclick="filterByName('Watermelon','fresh')">
+                        <div class="seasonal-emoji">🍉</div>
+                        <div class="seasonal-info">
+                            <div class="seasonal-name">Watermelon</div>
+                            <div class="seasonal-price">Rs. 60/piece</div>
+                        </div>
+                        <span class="seasonal-tag">IN SEASON</span>
+                    </div>
+                    <div class="seasonal-item" onclick="filterByName('Strawberry','fresh')">
+                        <div class="seasonal-emoji">🍓</div>
+                        <div class="seasonal-info">
+                            <div class="seasonal-name">Strawberry</div>
+                            <div class="seasonal-price">Rs. 250/box</div>
+                        </div>
+                        <span class="seasonal-tag">IN SEASON</span>
+                    </div>
+                    <div class="seasonal-item" onclick="filterByName('Custard Apple','fruits')">
+                        <div class="seasonal-emoji">🍏</div>
+                        <div class="seasonal-info">
+                            <div class="seasonal-name">Custard Apple</div>
+                            <div class="seasonal-price">Rs. 120/kg</div>
+                        </div>
+                        <span class="seasonal-tag">IN SEASON</span>
+                    </div>
+                    <div class="seasonal-item" onclick="filterByName('Green Peas','fresh')">
+                        <div class="seasonal-emoji">🟢</div>
+                        <div class="seasonal-info">
+                            <div class="seasonal-name">Green Peas</div>
+                            <div class="seasonal-price">Rs. 60/kg</div>
+                        </div>
+                        <span class="seasonal-tag">IN SEASON</span>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- PRODUCTS AREA -->
+        <div class="products-area">
+            <div class="sort-bar">
+                <label for="sortSelect"><i class="fa fa-sort me-1"></i> Sort by:</label>
+                <select class="sort-select" id="sortSelect" onchange="handleSort(this.value)">
+                    <option value="default">Default (A–Z)</option>
+                    <option value="low">Price: Low to High</option>
+                    <option value="high">Price: High to Low</option>
+                    <option value="name">Name: A–Z</option>
+                </select>
+                <span class="result-count" id="resultCount"></span>
+            </div>
+
+            <!-- Vegetables -->
+            <div id="pane-vegetables">
+                <div class="row g-4" id="grid-vegetables">
+                    <div class="col-lg-4 col-md-6 col-6"><div class="skeleton skeleton-card"></div></div>
+                    <div class="col-lg-4 col-md-6 col-6"><div class="skeleton skeleton-card"></div></div>
+                    <div class="col-lg-4 col-md-6 col-6"><div class="skeleton skeleton-card"></div></div>
+                </div>
+                <div class="empty-state d-none" id="no-vegetables">
+                    <i class="fa fa-search"></i>
+                    <strong>No products found</strong>
+                    Try a wider price range or reset the filter.
+                </div>
+            </div>
+
+            <!-- Fruits -->
+            <div id="pane-fruits" class="d-none">
+                <div class="row g-4" id="grid-fruits"></div>
+                <div class="empty-state d-none" id="no-fruits">
+                    <i class="fa fa-search"></i>
+                    <strong>No products found</strong>
+                    Try a wider price range or reset the filter.
+                </div>
+            </div>
+
+            <!-- Fresh -->
+            <div id="pane-fresh" class="d-none">
+                <div class="row g-4" id="grid-fresh"></div>
+                <div class="empty-state d-none" id="no-fresh">
+                    <i class="fa fa-search"></i>
+                    <strong>No products found</strong>
+                    Try a wider price range or reset the filter.
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-4">
+                <div class="footer-logo-text">🌿 Fresh &amp; Organic</div>
+                <div class="footer-logo-sub">Cold Storage</div>
+                <p class="footer-desc">Premium cold storage for organic fruits, vegetables and fresh produce. Farm-fresh, pesticide-free, delivered to your door.</p>
+                <div class="footer-social">
+                    <a href="https://github.com/Sujal-0803" class="social-btn"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/sujalmaru0803" class="social-btn"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.instagram.com/sujalll._24" class="social-btn"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/7972891795" class="social-btn"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="col-6 col-lg-2">
+                <div class="footer-heading">Pages</div>
+                <ul class="footer-links">
+                    <li><a href="index.html"><i class="fa fa-chevron-right"></i> Home</a></li>
+                    <li><a href="about.html"><i class="fa fa-chevron-right"></i> About</a></li>
+                    <li><a href="products.html"><i class="fa fa-chevron-right"></i> Products</a></li>
+                    <li><a href="feature.html"><i class="fa fa-chevron-right"></i> Features</a></li>
+                    <li><a href="contact.html"><i class="fa fa-chevron-right"></i> Contact</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
+                <div class="footer-heading">My Account</div>
+                <ul class="footer-links">
+                    <li><a href="login.html"><i class="fa fa-chevron-right"></i> Login</a></li>
+                    <li><a href="register.html"><i class="fa fa-chevron-right"></i> Register</a></li>
+                    <li><a href="profile.html"><i class="fa fa-chevron-right"></i> My Profile</a></li>
+                    <li><a href="orders.html"><i class="fa fa-chevron-right"></i> My Orders</a></li>
+                    <li><a href="cart.html"><i class="fa fa-chevron-right"></i> My Cart</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4">
+                <div class="footer-heading">Contact Us</div>
+                <div class="footer-contact-item"><i class="fa fa-map-marker-alt"></i><span>Pune, Maharashtra, India</span></div>
+                <div class="footer-contact-item"><i class="fa fa-phone"></i><span>+91 79728 91795</span></div>
+                <div class="footer-contact-item"><i class="fa fa-envelope"></i><span>sujalmaru2004@gmail.com</span></div>
+                <div class="footer-contact-item"><i class="fa fa-clock"></i><span>Mon – Sat: 9:00 AM – 6:00 PM</span></div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 Fresh &amp; Organic Cold Storage — Personal Portfolio Project by <strong style="color:var(--ac);">Sujal Maru</strong></span>
+            <span><a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms of Service</a></span>
+        </div>
+    </div>
+</footer>
+
+<div class="portfolio-bar">
+    ⚡ Personal portfolio project — Built by <a href="contact.html">Sujal Maru</a>, Pune
+</div>
+
+<button id="backToTop" aria-label="Back to top"><i class="fa fa-arrow-up"></i></button>
+<div id="toast"><i class="fa fa-check-circle"></i> <span id="toastMsg"></span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="js/navbar.js"></script>
+
+<!-- ═══════════════════════════════════
+     FIREBASE + PRODUCTS LOGIC
+═══════════════════════════════════ -->
+<script type="module">
+import { getApp, initializeApp }               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey:            "AIzaSyBGxXVoJVRSdCmvL8DJZ5SJysLH8OcU9CQ",
+    authDomain:        "fresh-organic-6f341.firebaseapp.com",
+    projectId:         "fresh-organic-6f341",
+    storageBucket:     "fresh-organic-6f341.firebasestorage.app",
+    messagingSenderId: "1020727069856",
+    appId:             "1:1020727069856:web:3cc4c4ec43c42084620dc5"
+};
+
+let app;
+try { app = getApp(); } catch(e) { app = initializeApp(firebaseConfig); }
+const db = getFirestore(app);
+
+let ALL_PRODUCTS = [];
+let activeTab    = 'vegetables';
+let sortVal      = 'default';
+let searchVal    = '';
+let priceMin     = 0;
+let priceMax     = 500;
+
+async function loadAllProducts() {
+    try {
+        const snapshot = await getDocs(collection(db, 'products'));
+        ALL_PRODUCTS = snapshot.docs.map(doc => ({
+            id:  doc.id,
+            tab: doc.data().category,
+            ...doc.data()
+        }));
+        renderAll();
+        updateCount();
+    } catch(e) {
+        console.error('Firestore error:', e);
+        showError();
+    }
+}
+
+function renderAll() {
+    ['vegetables', 'fruits', 'fresh'].forEach(renderTab);
+}
+
+function renderTab(tab) {
+    let list = ALL_PRODUCTS.filter(p => {
+        if (p.tab !== tab) return false;
+        if (p.price < priceMin || p.price > priceMax) return false;
+        if (searchVal && !p.name.toLowerCase().includes(searchVal.toLowerCase())) return false;
+        return true;
+    });
+
+    list.sort((a, b) => a.name.localeCompare(b.name));
+    if (sortVal === 'low')  list.sort((a, b) => a.price - b.price);
+    if (sortVal === 'high') list.sort((a, b) => b.price - a.price);
+
+    const grid  = document.getElementById('grid-' + tab);
+    const noRes = document.getElementById('no-'   + tab);
+
+    if (!list.length) {
+        grid.innerHTML = '';
+        noRes.classList.remove('d-none');
+    } else {
+        noRes.classList.add('d-none');
+        grid.innerHTML = list.map(cardHTML).join('');
+    }
+
+    if (tab === activeTab) updateCount(list.length);
+}
+
+function cardHTML(p) {
+    const href = `product.html?id=${p.id}`;
+    return `
+    <div class="col-lg-4 col-md-6 col-6">
+        <div class="prod-card">
+            <div class="prod-img-wrap">
+                <img src="${p.image}" alt="${p.name}" loading="lazy"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                <div style="display:none;height:185px;align-items:center;justify-content:center;font-size:56px;background:var(--surf);">
+                    ${p.emoji || '🌿'}
+                </div>
+                ${p.tab === 'fresh' ? '<span class="fresh-badge">FRESH</span>' : ''}
+            </div>
+            <div class="prod-body">
+                <a class="prod-name" href="${href}">${p.name}</a>
+                <div class="prod-price">
+                    Rs. ${p.price}/${p.unit}
+                    ${p.oldPrice ? `<span style="font-size:11px;color:var(--mt);text-decoration:line-through;margin-left:6px;">Rs.${p.oldPrice}</span>` : ''}
+                </div>
+                <div class="prod-btns">
+                    <a class="btn-view" href="${href}">View <i class="fa-regular fa-eye"></i></a>
+                    <button class="btn-add"
+                        onclick="window.__addToCart && window.__addToCart('${p.name}',${p.price},'${p.image}','${p.unit}')">
+                        Add <i class="fa-solid fa-cart-shopping"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function updateCount(n) {
+    const list = ALL_PRODUCTS.filter(p => {
+        if (p.tab !== activeTab) return false;
+        if (p.price < priceMin || p.price > priceMax) return false;
+        if (searchVal && !p.name.toLowerCase().includes(searchVal.toLowerCase())) return false;
+        return true;
+    });
+    const count = n !== undefined ? n : list.length;
+    document.getElementById('resultCount').textContent =
+        count + ' product' + (count !== 1 ? 's' : '');
+}
+
+function showError() {
+    ['vegetables','fruits','fresh'].forEach(tab => {
+        document.getElementById('grid-' + tab).innerHTML =
+            '<div class="col-12"><div class="empty-state"><i class="fa fa-exclamation-circle"></i><strong>Could not load products</strong>Check your connection and refresh.</div></div>';
+    });
+}
+
+document.querySelectorAll('.tab-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeTab = btn.dataset.tab;
+        document.querySelectorAll('[id^="pane-"]').forEach(p => p.classList.add('d-none'));
+        document.getElementById('pane-' + activeTab).classList.remove('d-none');
+        renderTab(activeTab);
+        updateCount();
+    });
+});
+
+window.handleSort = function(val) { sortVal = val; renderAll(); };
+
+window.filterByName = function(name, tab) {
+    searchVal = name;
+    activeTab = tab;
+    document.querySelectorAll('.tab-pill').forEach(b =>
+        b.classList.toggle('active', b.dataset.tab === tab));
+    document.querySelectorAll('[id^="pane-"]').forEach(x => x.classList.add('d-none'));
+    document.getElementById('pane-' + tab).classList.remove('d-none');
+    renderAll();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => { searchVal = ''; renderAll(); }, 3000);
+};
+
+const minSlider = document.getElementById('minSlider');
+const maxSlider = document.getElementById('maxSlider');
+const minLabel  = document.getElementById('minLabel');
+const maxLabel  = document.getElementById('maxLabel');
+const fillEl    = document.getElementById('sliderFill');
+const RANGE_MAX = 500;
+
+function updateSliderUI() {
+    const lo = parseInt(minSlider.value);
+    const hi = parseInt(maxSlider.value);
+    minLabel.textContent  = 'Rs. ' + lo;
+    maxLabel.textContent  = 'Rs. ' + hi;
+    fillEl.style.left     = (lo / RANGE_MAX * 100) + '%';
+    fillEl.style.width    = ((hi - lo) / RANGE_MAX * 100) + '%';
+}
+
+minSlider.addEventListener('input', () => {
+    if (parseInt(minSlider.value) >= parseInt(maxSlider.value) - 5)
+        minSlider.value = parseInt(maxSlider.value) - 5;
+    updateSliderUI();
+});
+maxSlider.addEventListener('input', () => {
+    if (parseInt(maxSlider.value) <= parseInt(minSlider.value) + 5)
+        maxSlider.value = parseInt(minSlider.value) + 5;
+    updateSliderUI();
+});
+
+window.applyPriceFilter = function() {
+    priceMin = parseInt(minSlider.value);
+    priceMax = parseInt(maxSlider.value);
+    document.getElementById('activeFilterText').textContent =
+        'Rs. ' + priceMin + ' – Rs. ' + priceMax;
+    document.getElementById('activeFilterPill').classList.add('show');
+    renderAll();
+    showToast('Showing products Rs. ' + priceMin + ' – Rs. ' + priceMax);
+};
+
+window.resetPriceFilter = function() {
+    priceMin = 0; priceMax = 500;
+    minSlider.value = 0; maxSlider.value = 500;
+    updateSliderUI();
+    document.getElementById('activeFilterPill').classList.remove('show');
+    renderAll();
+    showToast('Price filter cleared');
+};
+
+window.__addToCart = function(name, price, image, unit) {
+    if (window.requireLogin && !window.requireLogin('add items to cart')) return;
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const idx = cart.findIndex(i => i.name === name);
+    if (idx > -1) cart[idx].quantity++;
+    else cart.push({ name, price, image, unit, quantity: 1 });
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.querySelectorAll('.cart-count-badge').forEach(el =>
+        el.textContent = cart.reduce((s, i) => s + i.quantity, 0));
+    showToast(name + ' added to cart!');
+};
+
+window.handleSearch = function(val) { searchVal = val; renderAll(); };
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+const topBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', () => topBtn.classList.toggle('show', window.scrollY > 300));
+topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+window.addEventListener('DOMContentLoaded', () => {
+    updateSliderUI();
+    const cat = new URLSearchParams(window.location.search).get('category');
+    if (cat && ['vegetables','fruits','fresh'].includes(cat)) {
+        activeTab = cat;
+        document.querySelectorAll('.tab-pill').forEach(b =>
+            b.classList.toggle('active', b.dataset.tab === cat));
+        document.querySelectorAll('[id^="pane-"]').forEach(p => p.classList.add('d-none'));
+        document.getElementById('pane-' + cat).classList.remove('d-none');
+    }
+    loadAllProducts();
+});
+</script>
+</body>
+</html>

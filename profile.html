@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile | Fresh & Organic Cold Storage</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg:     #0D1B2A;
+            --surf:   #122234;
+            --card:   #1A2F42;
+            --ac:     #00B4D8;
+            --ac-dim: rgba(0,180,216,0.10);
+            --ac-mid: rgba(0,180,216,0.22);
+            --tx:     #E8F5E9;
+            --mt:     #8FAABF;
+            --border: rgba(0,180,216,0.14);
+            --success:#06D6A0;
+            --warn:   #FFD60A;
+            --danger: #FF6B6B;
+            --radius: 14px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { background:var(--bg); color:var(--tx); font-family:'Inter',sans-serif; font-size:15px; overflow-x:hidden; }
+
+        /* ── NAVBAR ── */
+        #navbar-placeholder .navbar { background: var(--surf) !important; border-bottom: 0.5px solid var(--border); padding: 0 !important; }
+        #navbar-placeholder .nav-link { color: var(--mt) !important; font-size: 15px; font-weight: 500; padding: 1.1rem 0.65rem !important; font-family: 'Inter', sans-serif; }
+        #navbar-placeholder .nav-link:hover,
+        #navbar-placeholder .nav-link.active { color: var(--ac) !important; }
+        #navbar-placeholder .logo-icon { width:36px;height:36px;background:var(--ac-dim);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--ac);font-size:16px;margin-right:10px; }
+        #navbar-placeholder .bg-light { background: var(--card) !important; }
+        #navbar-placeholder .text-dark { color: var(--mt) !important; }
+        #navbar-placeholder .dropdown-menu { background:var(--surf) !important; border:0.5px solid var(--border) !important; border-radius:var(--radius) !important; }
+        #navbar-placeholder .dropdown-item { color:var(--tx); font-size:13px; }
+        #navbar-placeholder .dropdown-item:hover { background:var(--ac-dim) !important; color:var(--ac); }
+        #navbar-placeholder .dropdown-item.text-danger { color:var(--danger) !important; }
+        #navbar-placeholder .dropdown-divider { border-color:var(--border); }
+
+        /* ── PAGE HEADER — exact same as about-hero ── */
+        .page-header {
+            background: var(--bg);
+            padding: 48px 0 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .page-header::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 48px 48px;
+            opacity: 0.35;
+        }
+        .page-header::after {
+            content: '';
+            position: absolute; top: 0; right: 0;
+            width: 500px; height: 100%;
+            background: radial-gradient(ellipse at right, rgba(0,180,216,0.07), transparent 70%);
+            pointer-events: none;
+        }
+        .page-header .container { position: relative; z-index: 1; }
+
+        .breadcrumb-row { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--mt); margin-bottom:24px; }
+        .breadcrumb-row a { color:var(--ac); text-decoration:none; }
+        .page-title { font-family:'Playfair Display',serif; font-size:clamp(28px,4vw,42px); font-weight:700; color:var(--tx); margin:0; line-height:1.15; }
+
+        /* ── LAYOUT ── */
+        .profile-layout { display:flex; gap:24px; align-items:flex-start; padding:32px 0 60px; }
+        .profile-sidebar { width:240px; flex-shrink:0; position:sticky; top:20px; }
+
+        /* avatar card */
+        .avatar-card { background:var(--surf); border:0.5px solid var(--border); border-radius:var(--radius); padding:28px 20px; text-align:center; margin-bottom:16px; }
+        .avatar-circle {
+            width:76px; height:76px; border-radius:50%; margin:0 auto 14px;
+            background:var(--ac); display:flex; align-items:center; justify-content:center;
+            font-size:26px; font-weight:700; color:#0D1B2A; font-family:'Space Grotesk',sans-serif;
+            border:3px solid var(--ac-mid);
+        }
+        .avatar-name { font-size:16px; font-weight:700; color:var(--tx); margin-bottom:4px; }
+        .avatar-email { font-size:12px; color:var(--mt); word-break:break-all; }
+        .avatar-since { font-size:11px; color:var(--mt); margin-top:10px; padding-top:10px; border-top:0.5px solid var(--border); }
+
+        /* sidebar nav */
+        .sb-nav { background:var(--surf); border:0.5px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+        .sb-nav-item {
+            display:flex; align-items:center; gap:10px; padding:13px 18px;
+            font-size:13px; font-weight:600; color:var(--mt); cursor:pointer;
+            border-bottom:0.5px solid rgba(255,255,255,0.04); transition:all .15s;
+        }
+        .sb-nav-item:last-child { border-bottom:none; }
+        .sb-nav-item i { width:16px; text-align:center; color:var(--ac); }
+        .sb-nav-item:hover { background:var(--ac-dim); color:var(--ac); }
+        .sb-nav-item.active { background:var(--ac-dim); color:var(--ac); }
+        .sb-nav-item.logout { color:var(--danger); }
+        .sb-nav-item.logout i { color:var(--danger); }
+        .sb-nav-item.logout:hover { background:rgba(255,107,107,0.08); }
+
+        /* ── MAIN CONTENT ── */
+        .profile-main { flex:1; min-width:0; }
+        .panel { display:none; }
+        .panel.active { display:block; }
+
+        .c-card { background:var(--surf); border:0.5px solid var(--border); border-radius:var(--radius); padding:24px; margin-bottom:20px; }
+        .c-card-title { font-size:15px; font-weight:700; color:var(--tx); margin-bottom:18px; display:flex; align-items:center; gap:8px; font-family:'Space Grotesk',sans-serif; }
+        .c-card-title i { color:var(--ac); }
+
+        .form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+        .form-label-sm { font-size:11px; font-weight:600; color:var(--mt); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:5px; display:block; font-family:'Space Grotesk',sans-serif; }
+        .form-input {
+            width:100%; background:var(--card); border:0.5px solid var(--border);
+            border-radius:8px; padding:10px 12px; font-size:13px; color:var(--tx);
+            outline:none; font-family:'Inter',sans-serif; transition:border-color .15s;
+        }
+        .form-input::placeholder { color:var(--mt); }
+        .form-input:focus { border-color:var(--ac); }
+        .form-input:disabled { opacity:0.6; cursor:not-allowed; }
+        .form-group-mb { margin-bottom:14px; }
+
+        .btn-save {
+            background:var(--ac); color:#0D1B2A; border:none; border-radius:8px;
+            padding:10px 24px; font-size:13px; font-weight:700; cursor:pointer;
+            font-family:'Inter',sans-serif; transition:background .15s;
+        }
+        .btn-save:hover { background:#00c8f0; }
+        .save-success-msg { font-size:12px; color:var(--success); margin-top:10px; display:none; }
+        .save-success-msg.show { display:block; }
+
+        /* address cards */
+        .addr-card {
+            background:var(--card); border:1.5px solid var(--border); border-radius:10px;
+            padding:14px 16px; margin-bottom:10px; position:relative;
+        }
+        .addr-edit-btn {
+            position:absolute; top:12px; right:12px;
+            width:26px; height:26px; border-radius:7px;
+            background:var(--surf); border:0.5px solid var(--border);
+            color:var(--mt); font-size:11px; cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            transition:all .15s;
+        }
+        .addr-edit-btn:hover { background:var(--ac-dim); color:var(--ac); border-color:var(--ac-mid); }
+        .addr-delete-btn {
+            position:absolute; top:12px; right:46px;
+            width:26px; height:26px; border-radius:7px;
+            background:var(--surf); border:0.5px solid var(--border);
+            color:var(--mt); font-size:11px; cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            transition:all .15s;
+        }
+        .addr-delete-btn:hover { background:rgba(255,107,107,0.1); color:var(--danger); border-color:rgba(255,107,107,0.3); }
+        .addr-name { font-size:14px; font-weight:700; color:var(--tx); margin-bottom:4px; padding-right:84px; }
+        .addr-tag { font-size:9px; font-weight:700; background:var(--ac-dim); color:var(--ac); padding:2px 8px; border-radius:6px; margin-left:8px; font-family:'Space Grotesk',sans-serif; }
+        .addr-text { font-size:13px; color:var(--mt); line-height:1.6; }
+        .addr-phone { font-size:12px; color:var(--mt); margin-top:4px; }
+
+        .btn-add-addr {
+            width:100%; padding:11px; background:transparent;
+            border:1.5px dashed var(--ac-mid); border-radius:10px;
+            color:var(--ac); font-size:13px; font-weight:600; cursor:pointer;
+            font-family:'Inter',sans-serif; transition:all .15s;
+        }
+        .btn-add-addr:hover { background:var(--ac-dim); }
+
+        .addr-form { display:none; margin-top:14px; }
+        .addr-form.show { display:block; }
+        .btn-save-addr {
+            background:var(--ac); color:#0D1B2A; border:none; border-radius:8px;
+            padding:9px 20px; font-size:13px; font-weight:700; cursor:pointer;
+            font-family:'Inter',sans-serif; transition:background .15s;
+        }
+        .btn-save-addr:hover { background:#00c8f0; }
+        .btn-cancel-addr {
+            background:transparent; color:var(--mt); border:0.5px solid var(--border);
+            border-radius:8px; padding:9px 20px; font-size:13px; font-weight:600;
+            cursor:pointer; font-family:'Inter',sans-serif; margin-left:8px;
+        }
+
+        .empty-note { font-size:13px; color:var(--mt); padding:8px 0 14px; }
+
+        /* quick stat cards */
+        .stat-mini-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+        .stat-mini { background:var(--surf); border:0.5px solid var(--border); border-radius:var(--radius); padding:18px; text-align:center; }
+        .stat-mini-val { font-size:24px; font-weight:800; color:var(--ac); font-family:'Playfair Display',serif; }
+        .stat-mini-lbl { font-size:11px; color:var(--mt); margin-top:4px; }
+
+        /* ── AUTH LOADING SKELETON ── */
+        #profileBody { opacity: 0; transition: opacity 0.25s ease; }
+        #profileBody.auth-ready { opacity: 1; }
+
+        .skel {
+            background: linear-gradient(90deg, var(--card) 25%, var(--surf) 50%, var(--card) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.2s infinite;
+            border-radius: 6px;
+        }
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+        .skel-circle { width:76px; height:76px; border-radius:50%; margin:0 auto 14px; }
+        .skel-line   { height:12px; margin-bottom:8px; }
+        .skel-line.w60 { width:60%; margin-left:auto; margin-right:auto; }
+        .skel-line.w40 { width:40%; margin-left:auto; margin-right:auto; }
+
+        footer { background:#060E17; border-top:0.5px solid var(--border); padding:20px 0; text-align:center; font-size:12px; color:var(--mt); }
+        footer a { color:var(--mt); text-decoration:none; }
+        footer a:hover { color:var(--ac); }
+        .portfolio-bar { background:var(--ac-dim); border-top:0.5px solid var(--ac-mid); padding:10px 0; text-align:center; font-size:12px; color:var(--ac); font-family:'Space Grotesk',sans-serif; }
+        .portfolio-bar a { color:var(--ac); font-weight:600; }
+
+        @media (max-width:991px) {
+            .page-header { padding: 36px 0 30px; }
+            .profile-layout { flex-direction:column; }
+            .profile-sidebar { width:100%; position:static; }
+        }
+        @media (max-width:767px) { .stat-mini-row { grid-template-columns:repeat(2,1fr); } }
+        @media (max-width:575px) { .form-row-2 { grid-template-columns:1fr; } .stat-mini-row { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+
+<div id="navbar-placeholder"></div>
+
+<!-- PAGE HEADER — same background as about-hero -->
+<div class="page-header">
+    <div class="container">
+        <div class="breadcrumb-row">
+            <a href="index.html">Home</a>
+            <i class="fa fa-chevron-right" style="font-size:9px;"></i>
+            <a href="profile.html" id="breadcrumbProfile">My Profile</a>
+            <span id="breadcrumbPanelWrap" class="d-none">
+                <i class="fa fa-chevron-right" style="font-size:9px;"></i>
+                <span id="breadcrumbPanel"></span>
+            </span>
+        </div>
+        <h1 class="page-title" id="pageTitleText">My Profile</h1>
+    </div>
+</div>
+
+<div id="profileBody">
+
+<div class="container">
+    <div class="profile-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="profile-sidebar">
+            <div class="avatar-card">
+                <!-- Skeleton shown until auth loads -->
+                <div id="avatarSkeleton">
+                    <div class="skel skel-circle"></div>
+                    <div class="skel skel-line w60"></div>
+                    <div class="skel skel-line w40"></div>
+                </div>
+                <!-- Real content, hidden until ready -->
+                <div id="avatarContent" style="display:none;">
+                    <div class="avatar-circle" id="avatarInitials">--</div>
+                    <div class="avatar-name" id="sbName">Loading...</div>
+                    <div class="avatar-email" id="sbEmail"></div>
+                    <div class="avatar-since" id="sbSince"></div>
+                </div>
+            </div>
+
+            <div class="sb-nav">
+                <div class="sb-nav-item active" data-panel="account"><i class="fa fa-user"></i> Account Details</div>
+                <div class="sb-nav-item" data-panel="addresses"><i class="fa fa-map-marker-alt"></i> Saved Addresses</div>
+                <div class="sb-nav-item" data-panel="password"><i class="fa fa-lock"></i> Change Password</div>
+                <div class="sb-nav-item" onclick="window.location.href='orders.html'"><i class="fa fa-box"></i> My Orders</div>
+                <div class="sb-nav-item" onclick="window.location.href='cart.html'"><i class="fa fa-shopping-cart"></i> My Cart</div>
+                <div class="sb-nav-item logout" onclick="window.doLogout && window.doLogout()"><i class="fa fa-sign-out-alt"></i> Logout</div>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="profile-main">
+
+            <div class="stat-mini-row">
+                <div class="stat-mini">
+                    <div class="stat-mini-val" id="statOrders">0</div>
+                    <div class="stat-mini-lbl">Total Orders</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-val" id="statInCart">0</div>
+                    <div class="stat-mini-lbl">In Cart</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-val" id="statAddresses">0</div>
+                    <div class="stat-mini-lbl">Saved Addresses</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-mini-val" id="statSpent">Rs.0</div>
+                    <div class="stat-mini-lbl">Total Spent</div>
+                </div>
+            </div>
+
+            <!-- ACCOUNT DETAILS PANEL -->
+            <div class="panel active" id="panel-account">
+                <div class="c-card">
+                    <div class="c-card-title"><i class="fa fa-id-card"></i> Account Details</div>
+
+                    <div class="form-row-2">
+                        <div>
+                            <label class="form-label-sm">First Name</label>
+                            <input type="text" class="form-input" id="firstNameInput" />
+                        </div>
+                        <div>
+                            <label class="form-label-sm">Last Name</label>
+                            <input type="text" class="form-input" id="lastNameInput" />
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div>
+                            <label class="form-label-sm">Email Address</label>
+                            <input type="email" class="form-input" id="emailInput" disabled />
+                        </div>
+                        <div>
+                            <label class="form-label-sm">Login Method</label>
+                            <input type="text" class="form-input" id="loginMethodInput" disabled />
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div>
+                            <label class="form-label-sm">Phone Number</label>
+                            <input type="tel" class="form-input" id="phoneInput" placeholder="+91 98765 43210" />
+                        </div>
+                        <div>
+                            <label class="form-label-sm">City</label>
+                            <input type="text" class="form-input" id="cityInput" placeholder="Pune" />
+                        </div>
+                    </div>
+
+                    <button class="btn-save" onclick="saveAccountDetails()">
+                        <i class="fa fa-check me-1"></i> Save Changes
+                    </button>
+                    <div class="save-success-msg" id="accountSaveMsg">
+                        <i class="fa fa-check-circle me-1"></i> Profile updated successfully!
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADDRESSES PANEL -->
+            <div class="panel" id="panel-addresses">
+                <div class="c-card">
+                    <div class="c-card-title"><i class="fa fa-map-marker-alt"></i> Saved Addresses</div>
+                    <div id="addressList"></div>
+                    <div class="empty-note d-none" id="noAddrNote">No saved addresses yet. Add one below — it'll also show up automatically at checkout.</div>
+
+                    <button class="btn-add-addr" onclick="toggleAddrForm()">
+                        <i class="fa fa-plus me-2"></i>Add New Address
+                    </button>
+
+                    <div class="addr-form" id="addrForm">
+                        <div id="addrFormTitle" style="font-size:13px;font-weight:700;color:var(--ac);margin-bottom:14px;margin-top:14px;font-family:'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Add New Address</div>
+                        <div class="form-row-2">
+                            <div>
+                                <label class="form-label-sm">Full Name</label>
+                                <input type="text" class="form-input" id="addrFullName" placeholder="Sujal Maru" />
+                            </div>
+                            <div>
+                                <label class="form-label-sm">Phone Number</label>
+                                <input type="tel" class="form-input" id="addrPhone" placeholder="+91 98765 43210" />
+                            </div>
+                        </div>
+                        <div class="form-group-mb">
+                            <label class="form-label-sm">Full Address</label>
+                            <textarea class="form-input" id="addrFull" placeholder="House no, Street, Landmark" style="min-height:70px;resize:none;"></textarea>
+                        </div>
+                        <div class="form-row-2">
+                            <div>
+                                <label class="form-label-sm">City</label>
+                                <input type="text" class="form-input" id="addrCity" placeholder="Pune" />
+                            </div>
+                            <div>
+                                <label class="form-label-sm">Pincode</label>
+                                <input type="text" class="form-input" id="addrPincode" placeholder="411001" />
+                            </div>
+                        </div>
+                        <div class="form-group-mb">
+                            <label class="form-label-sm">Address Type</label>
+                            <select class="form-input" id="addrType">
+                                <option value="Home">Home</option>
+                                <option value="Work">Work</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <button class="btn-save-addr" onclick="saveAddress()">
+                            <i class="fa fa-check me-1"></i> <span id="addrSaveBtnLabel">Save Address</span>
+                        </button>
+                        <button class="btn-cancel-addr" onclick="toggleAddrForm()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHANGE PASSWORD PANEL -->
+            <div class="panel" id="panel-password">
+                <div class="c-card">
+                    <div class="c-card-title"><i class="fa fa-lock"></i> Change Password</div>
+
+                    <div id="passwordFormWrap">
+                        <div class="form-group-mb">
+                            <label class="form-label-sm">Current Password</label>
+                            <input type="password" class="form-input" id="currentPasswordInput" placeholder="Enter current password" />
+                        </div>
+                        <div class="form-row-2">
+                            <div>
+                                <label class="form-label-sm">New Password</label>
+                                <input type="password" class="form-input" id="newPasswordInput" placeholder="Min. 6 characters" />
+                            </div>
+                            <div>
+                                <label class="form-label-sm">Confirm New Password</label>
+                                <input type="password" class="form-input" id="confirmPasswordInput" placeholder="Repeat new password" />
+                            </div>
+                        </div>
+                        <button class="btn-save" onclick="changePassword()">
+                            <i class="fa fa-key me-1"></i> Update Password
+                        </button>
+                        <div class="save-success-msg" id="passwordSaveMsg">
+                            <i class="fa fa-check-circle me-1"></i> Password updated successfully!
+                        </div>
+                        <div class="save-success-msg" id="passwordErrorMsg" style="color:var(--danger);"></div>
+                    </div>
+
+                    <div id="googleAccountNote" class="d-none" style="display:flex;align-items:flex-start;gap:12px;background:var(--card);border-radius:10px;padding:16px;">
+                        <i class="fa fa-circle-info" style="color:var(--ac);font-size:18px;margin-top:1px;"></i>
+                        <div style="font-size:13px;color:var(--mt);line-height:1.6;">
+                            Your account uses <strong style="color:var(--tx);">Google Sign-In</strong>, so there's no password to change here.
+                            Manage your password directly through your Google account settings.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</div><!-- /profileBody -->
+
+<footer>
+    <span>© 2026 Fresh &amp; Organic Cold Storage &nbsp;·&nbsp;
+    <a href="index.html">Home</a> &nbsp;·&nbsp;
+    <a href="products.html">Products</a></span>
+</footer>
+
+<div class="portfolio-bar">
+    ⚡ Personal portfolio project — Built by <a href="contact.html">Sujal Maru</a>, Pune
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="js/navbar.js"></script>
+
+<script type="module">
+import { getApp, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey:            "AIzaSyBGxXVoJVRSdCmvL8DJZ5SJysLH8OcU9CQ",
+    authDomain:        "fresh-organic-6f341.firebaseapp.com",
+    projectId:         "fresh-organic-6f341",
+    storageBucket:     "fresh-organic-6f341.firebasestorage.app",
+    messagingSenderId: "1020727069856",
+    appId:             "1:1020727069856:web:3cc4c4ec43c42084620dc5"
+};
+
+let app;
+try { app = getApp(); } catch(e) { app = initializeApp(firebaseConfig); }
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+let currentUser = null;
+let userData    = {};
+let addresses   = [];
+let editingAddrIndex = null;
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        sessionStorage.setItem('loginRedirectFrom', window.location.href);
+        window.location.href = 'login.html';
+        return;
+    }
+    currentUser = user;
+    await loadProfile();
+    await loadStats();
+
+    /* Swap skeleton → real avatar, then fade in the whole page */
+    document.getElementById('avatarSkeleton').style.display = 'none';
+    document.getElementById('avatarContent').style.display  = 'block';
+    document.getElementById('profileBody').classList.add('auth-ready');
+});
+
+async function loadProfile() {
+    try {
+        const snap = await getDoc(doc(db, 'users', currentUser.uid));
+        userData = snap.exists() ? snap.data() : {};
+        addresses = userData.addresses || [];
+    } catch(e) { console.error(e); }
+
+    const fullName  = userData.name || currentUser.displayName || currentUser.email.split('@')[0];
+    const parts     = fullName.trim().split(' ');
+    const firstName = userData.firstName || parts[0] || '';
+    const lastName  = userData.lastName  || parts.slice(1).join(' ') || '';
+    const initials  = (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase();
+
+    document.getElementById('avatarInitials').textContent = initials || 'U';
+    document.getElementById('sbName').textContent  = fullName;
+    document.getElementById('sbEmail').textContent = currentUser.email;
+
+    if (userData.createdAt) {
+        const d = new Date(userData.createdAt);
+        document.getElementById('sbSince').textContent = 'Member since ' + d.toLocaleDateString('en-IN', { month:'short', year:'numeric' });
+    }
+
+    document.getElementById('firstNameInput').value = firstName;
+    document.getElementById('lastNameInput').value  = lastName;
+    document.getElementById('emailInput').value     = currentUser.email;
+    document.getElementById('phoneInput').value     = userData.phone || '';
+    document.getElementById('cityInput').value      = userData.city  || '';
+
+    const providerId = currentUser.providerData[0]?.providerId || '';
+    const isGoogleAccount = providerId === 'google.com';
+    const loginMethodLabel = isGoogleAccount ? 'Google Sign-In' : 'Email & Password';
+    document.getElementById('loginMethodInput').value = loginMethodLabel;
+
+    document.getElementById('passwordFormWrap').style.display = isGoogleAccount ? 'none' : 'block';
+    document.getElementById('googleAccountNote').classList.toggle('d-none', !isGoogleAccount);
+
+    document.getElementById('statAddresses').textContent = addresses.length;
+
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    document.getElementById('statInCart').textContent = cartCount;
+
+    renderAddresses();
+}
+
+async function loadStats() {
+    try {
+        const q = query(collection(db, 'orders'), where('userId', '==', currentUser.uid));
+        const snap = await getDocs(q);
+        const orders = snap.docs.map(d => d.data());
+        document.getElementById('statOrders').textContent = orders.length;
+        const totalSpent = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+        document.getElementById('statSpent').textContent = 'Rs.' + totalSpent;
+    } catch(e) { console.error(e); }
+}
+
+const PANEL_LABELS = {
+    account:   'Account Details',
+    addresses: 'Saved Addresses',
+    password:  'Change Password'
+};
+
+document.querySelectorAll('.sb-nav-item[data-panel]').forEach(item => {
+    item.addEventListener('click', () => {
+        document.querySelectorAll('.sb-nav-item[data-panel]').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('panel-' + item.dataset.panel).classList.add('active');
+
+        const panelLabel = PANEL_LABELS[item.dataset.panel] || '';
+        document.getElementById('pageTitleText').textContent = panelLabel || 'My Profile';
+        const wrap = document.getElementById('breadcrumbPanelWrap');
+        if (item.dataset.panel === 'account') {
+            wrap.classList.add('d-none');
+        } else {
+            document.getElementById('breadcrumbPanel').textContent = panelLabel;
+            wrap.classList.remove('d-none');
+        }
+    });
+});
+
+window.saveAccountDetails = async function() {
+    const firstName = document.getElementById('firstNameInput').value.trim();
+    const lastName  = document.getElementById('lastNameInput').value.trim();
+    const phone     = document.getElementById('phoneInput').value.trim();
+    const city      = document.getElementById('cityInput').value.trim();
+    const fullName  = (firstName + ' ' + lastName).trim();
+
+    try {
+        await setDoc(doc(db, 'users', currentUser.uid), {
+            firstName, lastName, name: fullName, phone, city
+        }, { merge: true });
+
+        if (fullName && fullName !== currentUser.displayName) {
+            await updateProfile(currentUser, { displayName: fullName });
+        }
+
+        document.getElementById('sbName').textContent = fullName || currentUser.email.split('@')[0];
+        const initials = (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase();
+        document.getElementById('avatarInitials').textContent = initials || 'U';
+
+        const msg = document.getElementById('accountSaveMsg');
+        msg.classList.add('show');
+        setTimeout(() => msg.classList.remove('show'), 2500);
+
+        localStorage.setItem('__navUser', JSON.stringify({ displayName: fullName, email: currentUser.email }));
+    } catch(e) {
+        console.error(e);
+        alert('Failed to save changes. Please try again.');
+    }
+};
+
+window.changePassword = async function() {
+    const currentPwd = document.getElementById('currentPasswordInput').value;
+    const newPwd     = document.getElementById('newPasswordInput').value;
+    const confirmPwd = document.getElementById('confirmPasswordInput').value;
+    const errMsg     = document.getElementById('passwordErrorMsg');
+    const successMsg = document.getElementById('passwordSaveMsg');
+
+    errMsg.classList.remove('show');
+    successMsg.classList.remove('show');
+
+    if (!currentPwd || !newPwd || !confirmPwd) {
+        errMsg.textContent = 'Please fill in all password fields.';
+        errMsg.classList.add('show');
+        return;
+    }
+    if (newPwd.length < 6) {
+        errMsg.textContent = 'New password must be at least 6 characters.';
+        errMsg.classList.add('show');
+        return;
+    }
+    if (newPwd !== confirmPwd) {
+        errMsg.textContent = 'New password and confirmation do not match.';
+        errMsg.classList.add('show');
+        return;
+    }
+
+    try {
+        const credential = EmailAuthProvider.credential(currentUser.email, currentPwd);
+        await reauthenticateWithCredential(currentUser, credential);
+        await updatePassword(currentUser, newPwd);
+
+        successMsg.classList.add('show');
+        ['currentPasswordInput','newPasswordInput','confirmPasswordInput'].forEach(id =>
+            document.getElementById(id).value = '');
+        setTimeout(() => successMsg.classList.remove('show'), 3000);
+    } catch(e) {
+        let msg = 'Failed to update password. Please try again.';
+        if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') msg = 'Current password is incorrect.';
+        if (e.code === 'auth/too-many-requests') msg = 'Too many attempts. Please try again later.';
+        if (e.code === 'auth/weak-password') msg = 'New password is too weak.';
+        errMsg.textContent = msg;
+        errMsg.classList.add('show');
+    }
+};
+
+function renderAddresses() {
+    const list = document.getElementById('addressList');
+    const note = document.getElementById('noAddrNote');
+
+    if (!addresses.length) {
+        list.innerHTML = '';
+        note.classList.remove('d-none');
+        return;
+    }
+    note.classList.add('d-none');
+
+    list.innerHTML = addresses.map((a, i) => `
+        <div class="addr-card">
+            <button class="addr-edit-btn" onclick="editAddress(${i})" aria-label="Edit address">
+                <i class="fa fa-pen"></i>
+            </button>
+            <button class="addr-delete-btn" onclick="deleteAddress(${i})" aria-label="Delete address">
+                <i class="fa fa-trash"></i>
+            </button>
+            <div class="addr-name">${a.fullName} <span class="addr-tag">${a.type}</span></div>
+            <div class="addr-text">${a.fullAddress}, ${a.city} - ${a.pincode}</div>
+            <div class="addr-phone"><i class="fa fa-phone me-1"></i>${a.phone}</div>
+        </div>`).join('');
+}
+
+window.toggleAddrForm = function() {
+    const form = document.getElementById('addrForm');
+    const isOpening = !form.classList.contains('show');
+    if (isOpening) resetAddrForm();
+    form.classList.toggle('show');
+};
+
+function resetAddrForm() {
+    editingAddrIndex = null;
+    document.getElementById('addrFormTitle').textContent = 'Add New Address';
+    document.getElementById('addrSaveBtnLabel').textContent = 'Save Address';
+    ['addrFullName','addrPhone','addrFull','addrCity','addrPincode'].forEach(id =>
+        document.getElementById(id).value = '');
+    document.getElementById('addrType').value = 'Home';
+}
+
+window.editAddress = function(i) {
+    editingAddrIndex = i;
+    const a = addresses[i];
+    document.getElementById('addrFullName').value = a.fullName;
+    document.getElementById('addrPhone').value     = a.phone;
+    document.getElementById('addrFull').value      = a.fullAddress;
+    document.getElementById('addrCity').value      = a.city;
+    document.getElementById('addrPincode').value   = a.pincode;
+    document.getElementById('addrType').value      = a.type;
+    document.getElementById('addrFormTitle').textContent = 'Edit Address';
+    document.getElementById('addrSaveBtnLabel').textContent = 'Update Address';
+    document.getElementById('addrForm').classList.add('show');
+    document.getElementById('addrForm').scrollIntoView({ behavior:'smooth', block:'center' });
+};
+
+window.deleteAddress = async function(i) {
+    if (!confirm('Remove this address?')) return;
+    addresses.splice(i, 1);
+    try {
+        await setDoc(doc(db, 'users', currentUser.uid), { addresses }, { merge:true });
+    } catch(e) { console.error(e); }
+    document.getElementById('statAddresses').textContent = addresses.length;
+    renderAddresses();
+};
+
+window.saveAddress = async function() {
+    const fullName    = document.getElementById('addrFullName').value.trim();
+    const phone       = document.getElementById('addrPhone').value.trim();
+    const fullAddress = document.getElementById('addrFull').value.trim();
+    const city        = document.getElementById('addrCity').value.trim();
+    const pincode      = document.getElementById('addrPincode').value.trim();
+    const type         = document.getElementById('addrType').value;
+
+    if (!fullName || !phone || !fullAddress || !city || !pincode) {
+        alert('Please fill all address fields.');
+        return;
+    }
+
+    const addrData = { fullName, phone, fullAddress, city, pincode, type };
+
+    if (editingAddrIndex !== null) {
+        addresses[editingAddrIndex] = addrData;
+    } else {
+        addresses.push(addrData);
+    }
+
+    try {
+        await setDoc(doc(db, 'users', currentUser.uid), { addresses }, { merge: true });
+    } catch(e) { console.error(e); }
+
+    document.getElementById('statAddresses').textContent = addresses.length;
+    renderAddresses();
+    document.getElementById('addrForm').classList.remove('show');
+    resetAddrForm();
+};
+</script>
+</body>
+</html>
