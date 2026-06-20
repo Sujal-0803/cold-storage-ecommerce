@@ -56,7 +56,6 @@ Cold-Storage-Ecommerce
 │   └── icon
 │
 ├── js
-│   ├── main.js
 │   └── navbar.js                               # Shared navbar component + auth state
 │
 ├── index.html                                  # Home page
