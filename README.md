@@ -116,6 +116,8 @@ Open `index.html` directly in a browser, or serve it locally for best results (E
 
 ```
 
+---
+
 ## 🙋 About the Developer
 
 Built by **Sujal Maru** — a fresher developer based in Pune, Maharashtra, as a personal portfolio project to practice full-stack-feeling web development using Firebase as a backend-as-a-service.
