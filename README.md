@@ -37,33 +37,42 @@ This project was built to practice and showcase:
 
 | Layer | Technology |
 |---|---|
-| Frontend | HTML5, CSS3, Bootstrap 5, Vanilla JavaScript (ES6 Modules) |
+| Frontend | HTML5, CSS3, Bootstrap 5, JavaScript E56 |
 | Authentication | Firebase Authentication (Email/Password, Google OAuth) |
 | Database | Cloud Firestore |
-| Icons | Font Awesome 6 |
-| Fonts | Playfair Display, Inter, Space Grotesk (Google Fonts) |
+| Development Tools | VS Code, Git & GitHub |
 
 ---
 
 ## 📂 Project Structure
 
 ```
-cold-storage-ecommerce/
-├── index.html              # Home page
-├── about.html               # About page
-├── products.html             # Product listing with filters/search
-├── product.html               # Single product detail page
-├── login.html                  # Login page
-├── register.html                # Registration page
-├── cart.html                     # Shopping cart
-├── checkout.html                  # Checkout with payment methods
-├── orders.html                     # Order history & tracking
-├── profile.html                     # User profile & address management
-├── feature.html                      # Features/why-choose-us page
-├── testimonial.html                   # Customer testimonials page
-├── contact.html                        # Contact page
-├── js/
-│   └── navbar.js                        # Shared navbar component + auth state
+Cold-Storage-Ecommerce
+│
+├── img
+│   ├── fresh
+│   ├── fruits
+│   ├── vegetables
+│   └── icon
+│
+├── js
+│   ├── main.js
+│   └── navbar.js                               # Shared navbar component + auth state
+│
+├── index.html                                  # Home page
+├── about.html                                  # About page         
+├── feature.html                                # Features/why-choose-us page
+├── products.html                               # Product listing with filters/search
+├── product.html                                # Single product detail page
+├── cart.html                                   # Shopping cart
+├── checkout.html                               # Checkout with payment methods
+├── orders.html                                 # Order history & tracking
+├── profile.html                                # User profile & address management
+├── login.html                                  # Login page
+├── register.html                               # Registration page
+├── testimonial.html                            # Customer testimonials page
+├── contact.html                                # Contact page
+│
 └── README.md
 ```
 
