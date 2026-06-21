@@ -139,6 +139,18 @@
             font-size: 9px !important; 
         }
 
+        /* ── AUTH LOADING ── */
+        .auth-loading {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 60vh; flex-direction: column; gap: 16px;
+        }
+        .auth-loading .spinner {
+            width: 40px; height: 40px; border-radius: 50%;
+            border: 3px solid var(--border); border-top-color: var(--ac);
+            animation: spin .8s linear infinite;
+        }
+        .auth-loading p { color: var(--mt); font-size: 13px; }
+
         /* ── PAGE HEADER ── */
         .page-header { background:var(--bg); padding:18px 0 8px; position:relative; overflow:hidden; }
         .page-header::before {
@@ -467,8 +479,14 @@
 
 <div id="navbar-placeholder"></div>
 
+<!-- AUTH LOADING (shown until Firebase confirms login) -->
+<div class="auth-loading" id="authLoading">
+    <div class="spinner"></div>
+    <p>Checking your session…</p>
+</div>
+
 <!-- PAGE HEADER -->
-<div class="page-header">
+<div class="page-header d-none" id="pageHeaderSection">
     <div class="container">
         <div class="breadcrumb-row">
             <a href="index.html">Home</a>
@@ -503,7 +521,7 @@
     </div>
 </div>
 
-<div class="container py-4" id="checkoutContainer" style="max-width:1100px;">
+<div class="container py-4 d-none" id="checkoutContainer" style="max-width:1100px;">
     <div class="row g-4">
 
         <!-- LEFT: Address + Payment -->
@@ -766,7 +784,7 @@
 </div>
 
 <!-- BOTTOM BAR -->
-<div class="bottom-bar" id="bottomBar">
+<div class="bottom-bar d-none" id="bottomBar">
     <div>
         <p class="payable-label">Total Payable</p>
         <p class="payable-amount" id="payableAmount">Rs. 0</p>
@@ -842,7 +860,7 @@ function loadItems() {
 
     if (!items.length) {
         document.getElementById('checkoutContainer').classList.add('d-none');
-        document.getElementById('bottomBar').style.display = 'none';
+        document.getElementById('bottomBar').classList.add('d-none');
         document.getElementById('emptyCheckout').classList.remove('d-none');
         return;
     }
@@ -932,6 +950,13 @@ onAuthStateChanged(auth, async (user) => {
         return;
     }
     currentUser = user;
+
+    // Reveal real checkout content only after login is confirmed
+    document.getElementById('authLoading').classList.add('d-none');
+    document.getElementById('pageHeaderSection').classList.remove('d-none');
+    document.getElementById('checkoutContainer').classList.remove('d-none');
+    document.getElementById('bottomBar').classList.remove('d-none');
+
     await loadAddresses();
     loadItems();
 });
