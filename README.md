@@ -2,7 +2,7 @@
 
 A full-stack e-commerce web app for a fictional cold-storage organic produce brand — built as a personal portfolio project to demonstrate front-end UI craft, Firebase integration, and a complete shopping flow from browsing to checkout to order tracking.
 
-**🔗 Live Demo:** https://sujal-0803.github.io/cold-storage-ecommerce/
+**🔗 Live Demo:** https://sujal-0803.github.io/cold-storage-ecommerce
 
 ---
 
