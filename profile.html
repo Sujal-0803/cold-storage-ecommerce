@@ -30,19 +30,115 @@
         html { scroll-behavior: smooth; }
         body { background:var(--bg); color:var(--tx); font-family:'Inter',sans-serif; font-size:15px; overflow-x:hidden; }
 
-        /* ── NAVBAR ── */
-        #navbar-placeholder .navbar { background: var(--surf) !important; border-bottom: 0.5px solid var(--border); padding: 0 !important; }
-        #navbar-placeholder .nav-link { color: var(--mt) !important; font-size: 15px; font-weight: 500; padding: 1.1rem 0.65rem !important; font-family: 'Inter', sans-serif; }
+        /* ── NAVBAR (injected by navbar.js) ── */
+        #navbar-placeholder .navbar {
+            background: var(--surf) !important;
+            border-bottom: 0.5px solid var(--border);
+            padding: 0 !important;
+        }
+        #navbar-placeholder .navbar-brand h2 { 
+            font-size: 18px; 
+            color: var(--ac); 
+        }
+
+        #navbar-placeholder .navbar-brand small { 
+            color: var(--mt); 
+            font-size: 10px; 
+            letter-spacing: 0.12em; 
+        }
+
+        #navbar-placeholder .nav-link { 
+            color: var(--mt) !important; 
+            font-size: 15px; 
+            font-weight: 500; 
+            padding: 1.1rem 0.65rem !important; 
+            transition: color .2s; 
+            font-family: 'Inter', sans-serif; 
+            letter-spacing: 0.01em; 
+        }
+
         #navbar-placeholder .nav-link:hover,
-        #navbar-placeholder .nav-link.active { color: var(--ac) !important; }
-        #navbar-placeholder .logo-icon { width:36px;height:36px;background:var(--ac-dim);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--ac);font-size:16px;margin-right:10px; }
-        #navbar-placeholder .bg-light { background: var(--card) !important; }
-        #navbar-placeholder .text-dark { color: var(--mt) !important; }
-        #navbar-placeholder .dropdown-menu { background:var(--surf) !important; border:0.5px solid var(--border) !important; border-radius:var(--radius) !important; }
-        #navbar-placeholder .dropdown-item { color:var(--tx); font-size:13px; }
-        #navbar-placeholder .dropdown-item:hover { background:var(--ac-dim) !important; color:var(--ac); }
-        #navbar-placeholder .dropdown-item.text-danger { color:var(--danger) !important; }
-        #navbar-placeholder .dropdown-divider { border-color:var(--border); }
+        #navbar-placeholder .nav-link.active { 
+            color: var(--ac) !important; 
+        }
+
+        #navbar-placeholder .custom-btn { 
+            background: var(--ac) !important; 
+            color: #0D1B2A !important; 
+            font-weight: 600; 
+            order: none; 
+            border-radius: 8px; 
+        }
+
+        #navbar-placeholder .navbar-toggler { 
+            border-color: var(--border); 
+        }
+
+        #navbar-placeholder .navbar-toggler-icon { 
+            filter: invert(1); 
+        }
+
+        #navbar-placeholder .logo-icon { 
+            width: 36px; 
+            height: 36px; 
+            background: var(--ac-dim); 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: var(--ac); 
+            font-size: 16px; 
+            margin-right: 10px; 
+        }
+
+        #navbar-placeholder .logo-text h2 { 
+            color: var(--ac); 
+        }
+
+        #navbar-placeholder .bg-light { 
+            background: var(--card) !important; 
+        }
+
+        #navbar-placeholder .text-dark { 
+            color: var(--mt) !important; 
+        }
+
+        #navbar-placeholder .search-box {
+            position: absolute; top: calc(100% + 10px); right: 0;
+            width: 280px; background: var(--surf);
+            border: 0.5px solid var(--border); border-radius: var(--radius);
+            padding: 10px; z-index: 1000; box-shadow: var(--shadow);
+        }
+        #navbar-placeholder .search-box .form-control {
+            background: var(--card); border: 0.5px solid var(--border);
+            color: var(--tx); border-radius: 8px; font-size: 13px;
+        }
+        #navbar-placeholder .search-box .form-control::placeholder { color: var(--mt); }
+        #navbar-placeholder .dropdown-menu {
+            background: var(--surf); border: 0.5px solid var(--border) !important;
+            border-radius: var(--radius) !important;
+        }
+        #navbar-placeholder .dropdown-item { 
+            color: var(--tx); 
+            font-size: 13px; 
+        }
+
+        #navbar-placeholder .dropdown-item:hover { 
+            background: var(--ac-dim); 
+            color: var(--ac); 
+        }
+
+        #navbar-placeholder .dropdown-item.text-danger { 
+            color: var(--danger) !important; 
+        }
+
+        #navbar-placeholder .dropdown-divider { 
+            border-color: var(--border); 
+        }
+
+        #navbar-placeholder .cart-count-badge { 
+            font-size: 9px !important; 
+        }
 
         /* ── PAGE HEADER — exact same as about-hero ── */
         .page-header {
