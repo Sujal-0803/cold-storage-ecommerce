@@ -28,8 +28,14 @@ const FULLY_PROTECTED_PAGES = [
     "cart.html", "checkout.html", "profile.html", "orders.html"
 ];
 
-/* ── sync cart count ── */
-function syncCartCount() {
+/* ── sync cart count ──
+   Shows 0 when logged out (regardless of what's sitting in localStorage),
+   and the real localStorage cart total when logged in. */
+function syncCartCount(loggedIn) {
+    if (!loggedIn) {
+        document.querySelectorAll(".cart-count-badge").forEach(el => el.textContent = "0");
+        return;
+    }
     const cart  = JSON.parse(localStorage.getItem("cart")) || [];
     const total = cart.reduce((s, i) => s + i.quantity, 0);
     document.querySelectorAll(".cart-count-badge").forEach(el => el.textContent = total);
@@ -363,14 +369,14 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const u = JSON.parse(cached);
             ph.innerHTML = buildNavbar(u);
-            syncCartCount();
+            syncCartCount(true);
         } catch(e) {
             ph.innerHTML = buildNavbar(null);
-            syncCartCount();
+            syncCartCount(false);
         }
     } else {
         ph.innerHTML = buildNavbar(null);
-        syncCartCount();
+        syncCartCount(false);
     }
 });
 
@@ -396,7 +402,7 @@ onAuthStateChanged(auth, user => {
     const placeholder = document.getElementById("navbar-placeholder");
     if (placeholder) {
         placeholder.innerHTML = buildNavbar(user);
-        syncCartCount();
+        syncCartCount(!!user);
 
         /* Nav link active + hover colors */
         placeholder.querySelectorAll(".nav-link").forEach(a => {
