@@ -139,17 +139,17 @@
             font-size: 9px !important; 
         }
 
-        /* ── AUTH LOADING ── */
-        .auth-loading {
+        /* ── PAGE LOADER (generic, no text) ── */
+        .page-loading {
             display: flex; align-items: center; justify-content: center;
-            min-height: 60vh; flex-direction: column; gap: 16px;
+            min-height: 50vh;
         }
-        .auth-loading .spinner {
+        .page-loading .spinner {
             width: 40px; height: 40px; border-radius: 50%;
             border: 3px solid var(--border); border-top-color: var(--ac);
             animation: spin .8s linear infinite;
         }
-        .auth-loading p { color: var(--mt); font-size: 13px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* ── PAGE HEADER ── */
         .page-header { background:var(--bg); padding:18px 0 8px; position:relative; overflow:hidden; }
@@ -479,14 +479,8 @@
 
 <div id="navbar-placeholder"></div>
 
-<!-- AUTH LOADING (shown until Firebase confirms login) -->
-<div class="auth-loading" id="authLoading">
-    <div class="spinner"></div>
-    <p>Checking your session…</p>
-</div>
-
 <!-- PAGE HEADER -->
-<div class="page-header d-none" id="pageHeaderSection">
+<div class="page-header" id="pageHeaderSection">
     <div class="container">
         <div class="breadcrumb-row">
             <a href="index.html">Home</a>
@@ -519,6 +513,11 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- LOADER shown until auth check resolves -->
+<div class="page-loading" id="pageLoading">
+    <div class="spinner"></div>
 </div>
 
 <div class="container py-4 d-none" id="checkoutContainer" style="max-width:1100px;">
@@ -952,8 +951,7 @@ onAuthStateChanged(auth, async (user) => {
     currentUser = user;
 
     // Reveal real checkout content only after login is confirmed
-    document.getElementById('authLoading').classList.add('d-none');
-    document.getElementById('pageHeaderSection').classList.remove('d-none');
+    document.getElementById('pageLoading').classList.add('d-none');
     document.getElementById('checkoutContainer').classList.remove('d-none');
     document.getElementById('bottomBar').classList.remove('d-none');
 
