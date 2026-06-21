@@ -1,1102 +1,440 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About | Fresh & Organic Cold Storage</title>
+/* ── navbar.js  ── inject navbar + handle Firebase auth state on every page ── */
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet" />
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+const firebaseConfig = {
+    apiKey: "AIzaSyBGxXVoJVRSdCmvL8DJZ5SJysLH8OcU9CQ",
+    authDomain: "fresh-organic-6f341.firebaseapp.com",
+    projectId: "fresh-organic-6f341",
+    storageBucket: "fresh-organic-6f341.firebasestorage.app",
+    messagingSenderId: "1020727069856",
+    appId: "1:1020727069856:web:3cc4c4ec43c42084620dc5",
+    measurementId: "G-J1Y3KM9P80"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const PUBLIC_PAGES = [
+    "index.html", "", "about.html", "feature.html",
+    "testimonial.html", "contact.html",
+    "login.html", "register.html", "signup.html",
+    "products.html", "product.html"
+];
+
+const FULLY_PROTECTED_PAGES = [
+    "cart.html", "checkout.html", "profile.html", "orders.html"
+];
+
+/* ── sync cart count ──
+   Shows 0 when logged out (regardless of what's sitting in localStorage),
+   and the real localStorage cart total when logged in. */
+function syncCartCount(loggedIn) {
+    if (!loggedIn) {
+        document.querySelectorAll(".cart-count-badge").forEach(el => el.textContent = "0");
+        return;
+    }
+    const cart  = JSON.parse(localStorage.getItem("cart")) || [];
+    const total = cart.reduce((s, i) => s + i.quantity, 0);
+    document.querySelectorAll(".cart-count-badge").forEach(el => el.textContent = total);
+}
+
+/* ── logout ── */
+window.doLogout = function () {
+    signOut(auth).then(() => { window.location.href = "login.html"; });
+};
+
+/* ── toggle search box ── */
+window.toggleSearch = function () {
+    const box = document.getElementById("searchBox");
+    if (!box) return;
+    const isVisible = box.style.display === "block";
+    box.style.display = isVisible ? "none" : "block";
+    if (!isVisible) {
+        const input = document.getElementById("searchInput");
+        if (input) { input.focus(); input.select(); }
+    }
+};
+
+/* ── requireLogin ── */
+window.requireLogin = function (actionLabel) {
+    if (window.__firebaseUser) return true;
+    sessionStorage.setItem("loginRedirectFrom", window.location.href);
+    _showLoginToast(actionLabel || "this action");
+    setTimeout(() => { window.location.href = "login.html"; }, 1400);
+    return false;
+};
+
+function _showLoginToast(action) {
+    const existing = document.getElementById("toast");
+    const msg = "Please login to " + action;
+    if (existing) {
+        const label = document.getElementById("toastMsg");
+        if (label) label.textContent = msg;
+        existing.style.opacity = "1";
+        existing.style.transform = "translateY(0)";
+        setTimeout(() => { existing.style.opacity = "0"; existing.style.transform = "translateY(12px)"; }, 2000);
+        return;
+    }
+    let t = document.getElementById("_navLoginToast");
+    if (!t) {
+        t = document.createElement("div");
+        t.id = "_navLoginToast";
+        t.style.cssText = "position:fixed;bottom:28px;right:28px;background:#e53935;color:#fff;" +
+            "padding:12px 20px;border-radius:8px;font-size:14px;display:flex;align-items:center;" +
+            "gap:8px;z-index:9999;max-width:300px;box-shadow:0 4px 14px rgba(0,0,0,0.2);";
+        t.innerHTML = '<i class="fa fa-lock me-2"></i><span id="_navLoginToastMsg"></span>';
+        document.body.appendChild(t);
+    }
+    document.getElementById("_navLoginToastMsg").textContent = msg;
+    t.style.opacity = "1";
+    setTimeout(() => { t.style.opacity = "0"; }, 2000);
+}
+
+/* ── addToCart global intercept ── */
+window.addEventListener("DOMContentLoaded", () => {
+    if (typeof window.addToCart === "function") {
+        const _original = window.addToCart;
+        window.addToCart = function (...args) {
+            if (!window.requireLogin("add items to cart")) return;
+            _original.apply(this, args);
+        };
+    }
+
+    Object.defineProperty(window, "addToCart", {
+        configurable: true,
+        get() { return this._addToCart; },
+        set(fn) {
+            this._addToCart = function (...args) {
+                if (!window.requireLogin("add items to cart")) return;
+                fn.apply(this, args);
+            };
+        }
+    });
+
+    document.addEventListener("click", e => {
+        const btn = e.target.closest("[data-requires-login]");
+        if (btn && !window.__firebaseUser) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            window.requireLogin(btn.dataset.requiresLogin || "continue");
+        }
+    }, true);
+});
+
+/* ================================================================
+   SEARCH HANDLER
+   - On products.html → calls handleSearch() directly (live filter)
+   - On any other page → redirects to products.html?q=...
+================================================================ */
+window._navHandleSearch = function (val) {
+    const currentPage = window.location.pathname.split("/").pop() || "index.html";
+    if (currentPage === "products.html") {
+        if (typeof window.handleSearch === "function") window.handleSearch(val);
+    } else {
+        if (val.trim()) window.location.href = "products.html?q=" + encodeURIComponent(val.trim());
+    }
+};
+
+/* ── build navbar HTML ── */
+function buildNavbar(user) {
+    const currentPage = window.location.pathname.split("/").pop() || "index.html";
+
+    /* Base links — always visible */
+    const baseLinks = [
+        { href: "index.html",       label: "Home"        },
+        { href: "about.html",       label: "About"       },
+        { href: "products.html",    label: "Products"    },
+        { href: "feature.html",     label: "Features"    },
+        { href: "testimonial.html", label: "Testimonial" },
+        { href: "contact.html",     label: "Contact"     },
+    ];
+
+    /* No Orders link in navbar — user accesses orders from profile dropdown */
+    const allLinks = baseLinks;
+
+    /* ── nav links: tight spacing, 15px Inter 500 ── */
+    const navLinks = allLinks.map(l => `
+        <a href="${l.href}"
+           class="nav-item nav-link ${currentPage === l.href ? 'active' : ''}"
+           style="font-size:15px;font-weight:500;padding:1.1rem 0.7rem;
+                  font-family:'Inter',sans-serif;letter-spacing:0.01em;">
+            ${l.label}
+        </a>`).join("");
+
+    /* ── dropdown: cyan button — SM initials + name + arrow ── */
+    const userName  = user ? (user.displayName || user.email.split("@")[0]) : '';
+    const firstName = userName ? userName.split(" ")[0] : '';
+    const initials  = firstName ? (firstName.charAt(0).toUpperCase() +
+                      (userName.split(" ")[1] ? userName.split(" ")[1].charAt(0).toUpperCase() : '')) : '';
+    const avatarUrl = user ? `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=00B4D8&color=0D1B2A&size=64&bold=true` : '';
+
+    const userSection = user ? `
+        <div class="dropdown">
+            <button class="dropdown-toggle d-flex align-items-center gap-2"
+                    style="padding:6px 14px 6px 8px;border-radius:10px;
+                           background:#00B4D8;border:none;cursor:pointer;"
+                    type="button" data-bs-toggle="dropdown"
+                    data-bs-offset="0,8" aria-expanded="false">
+                <div style="width:28px;height:28px;border-radius:50%;
+                            background:#fff;display:flex;align-items:center;
+                            justify-content:center;font-size:11px;font-weight:700;
+                            color:#0D1B2A;flex-shrink:0;
+                            font-family:'Space Grotesk',sans-serif;">
+                    ${initials}
+                </div>
+                <span style="font-size:13px;font-weight:600;color:#0D1B2A;
+                             white-space:nowrap;font-family:'Inter',sans-serif;">
+                    ${firstName}
+                </span>
+            </button>
+
+            <!-- Dropdown menu: user info header + nav links -->
+            <ul class="dropdown-menu dropdown-menu-end shadow"
+                style="min-width:220px;border:none;border-radius:14px;
+                       padding:0;overflow:hidden;
+                       background:#1A2F42;
+                       box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+
+                <!-- User info header -->
+                <li>
+                    <div style="display:flex;align-items:center;gap:12px;
+                                padding:14px 16px;
+                                background:#122234;
+                                border-bottom:0.5px solid rgba(0,180,216,0.15);">
+                        <div style="width:42px;height:42px;border-radius:50%;
+                                    background:#1A2F42;border:1.5px solid rgba(0,180,216,0.3);
+                                    display:flex;align-items:center;
+                                    justify-content:center;font-size:15px;font-weight:700;
+                                    color:#00B4D8;flex-shrink:0;
+                                    font-family:'Space Grotesk',sans-serif;">
+                            ${initials}
+                        </div>
+                        <div style="min-width:0;">
+                            <div style="font-size:14px;font-weight:700;
+                                        color:#E8F5E9;font-family:'Inter',sans-serif;
+                                        white-space:nowrap;overflow:hidden;
+                                        text-overflow:ellipsis;max-width:140px;">
+                                ${userName}
+                            </div>
+                            <div style="font-size:11px;color:#8FAABF;
+                                        font-family:'Inter',sans-serif;
+                                        white-space:nowrap;overflow:hidden;
+                                        text-overflow:ellipsis;max-width:140px;
+                                        margin-top:2px;">
+                                ${user.email}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Menu items -->
+                <li><a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2"
+                       href="profile.html"
+                       style="color:#E8F5E9;font-size:13px;font-family:'Inter',sans-serif;">
+                    <i class="fa fa-user-circle" style="color:#00B4D8;width:16px;text-align:center;"></i>
+                    My Profile
+                </a></li>
+                <li><a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2"
+                       href="orders.html"
+                       style="color:#E8F5E9;font-size:13px;font-family:'Inter',sans-serif;">
+                    <i class="fa fa-box" style="color:#00B4D8;width:16px;text-align:center;"></i>
+                    My Orders
+                </a></li>
+                <li><a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2"
+                       href="cart.html"
+                       style="color:#E8F5E9;font-size:13px;font-family:'Inter',sans-serif;">
+                    <i class="fa fa-shopping-cart" style="color:#00B4D8;width:16px;text-align:center;"></i>
+                    My Cart
+                </a></li>
+                <li><hr style="margin:4px 0;border-color:rgba(0,180,216,0.15);"></li>
+                <li><a class="dropdown-item logout-item py-2 px-3 d-flex align-items-center gap-2"
+                       href="#" onclick="doLogout()"
+                       style="color:#FF6B6B;font-size:13px;font-family:'Inter',sans-serif;">
+                    <i class="fa fa-sign-out-alt" style="color:#FF6B6B;width:16px;text-align:center;"></i>
+                    Logout
+                </a></li>
+            </ul>
+        </div>` : `
+        <a href="login.html" class="btn btn-primary custom-btn px-4 py-2">
+            <i class="fa fa-user me-2"></i>Login
+        </a>`;
+
+    return `
     <style>
-        :root {
-            --bg:     #0D1B2A;
-            --surf:   #122234;
-            --card:   #1A2F42;
-            --ac:     #00B4D8;
-            --ac-dim: rgba(0,180,216,0.10);
-            --ac-mid: rgba(0,180,216,0.22);
-            --tx:     #E8F5E9;
-            --mt:     #8FAABF;
-            --border: rgba(0,180,216,0.14);
-            --success:#06D6A0;
-            --warn:   #FFD60A;
-            --danger: #FF6B6B;
-            --radius: 14px;
-        }
-
-        *, *::before, *::after { box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body {
-            background: var(--bg);
-            color: var(--tx);
-            font-family: 'Inter', sans-serif;
-            font-size: 15px;
-            line-height: 1.65;
-            overflow-x: hidden;
-        }
-
-        /* ── NAVBAR (injected by navbar.js) ── */
-        #navbar-placeholder .navbar {
-            background: var(--surf) !important;
-            border-bottom: 0.5px solid var(--border);
-            padding: 0 !important;
-        }
-        #navbar-placeholder .navbar-brand h2 { 
-            font-size: 18px; 
-            color: var(--ac); 
-        }
-
-        #navbar-placeholder .navbar-brand small { 
-            color: var(--mt); 
-            font-size: 10px; 
-            letter-spacing: 0.12em; 
-        }
-
-        #navbar-placeholder .nav-link { 
-            color: var(--mt) !important; 
-            font-size: 15px; 
-            font-weight: 500; 
-            padding: 1.1rem 0.65rem !important; 
-            transition: color .2s; 
-            font-family: 'Inter', sans-serif; 
-            letter-spacing: 0.01em; 
-        }
-
-        #navbar-placeholder .nav-link:hover,
-        #navbar-placeholder .nav-link.active { 
-            color: var(--ac) !important; 
-        }
-
-        #navbar-placeholder .custom-btn { 
-            background: var(--ac) !important; 
-            color: #0D1B2A !important; 
-            font-weight: 600; 
-            order: none; 
-            border-radius: 8px; 
-        }
-
-        #navbar-placeholder .navbar-toggler { 
-            border-color: var(--border); 
-        }
-
-        #navbar-placeholder .navbar-toggler-icon { 
-            filter: invert(1); 
-        }
-
-        #navbar-placeholder .logo-icon { 
-            width: 36px; 
-            height: 36px; 
-            background: var(--ac-dim); 
-            border-radius: 8px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: var(--ac); 
-            font-size: 16px; 
-            margin-right: 10px; 
-        }
-
-        #navbar-placeholder .logo-text h2 { 
-            color: var(--ac); 
-        }
-
-        #navbar-placeholder .bg-light { 
-            background: var(--card) !important; 
-        }
-
-        #navbar-placeholder .text-dark { 
-            color: var(--mt) !important; 
-        }
-
-        #navbar-placeholder .search-box {
-            position: absolute; top: calc(100% + 10px); right: 0;
-            width: 280px; background: var(--surf);
-            border: 0.5px solid var(--border); border-radius: var(--radius);
-            padding: 10px; z-index: 1000; box-shadow: var(--shadow);
-        }
-        #navbar-placeholder .search-box .form-control {
-            background: var(--card); border: 0.5px solid var(--border);
-            color: var(--tx); border-radius: 8px; font-size: 13px;
-        }
-        #navbar-placeholder .search-box .form-control::placeholder { color: var(--mt); }
-        #navbar-placeholder .dropdown-menu {
-            background: var(--surf); border: 0.5px solid var(--border) !important;
-            border-radius: var(--radius) !important;
-        }
-        #navbar-placeholder .dropdown-item { 
-            color: var(--tx); 
-            font-size: 13px; 
-        }
-
-        #navbar-placeholder .dropdown-item:hover { 
-            background: var(--ac-dim); 
-            color: var(--ac); 
-        }
-
-        #navbar-placeholder .dropdown-item.text-danger { 
-            color: var(--danger) !important; 
-        }
-
-        #navbar-placeholder .dropdown-divider { 
-            border-color: var(--border); 
-        }
-
-        #navbar-placeholder .cart-count-badge { 
-            font-size: 9px !important; 
-        }
-
-        /* ── SHARED ── */
-        section { padding: 80px 0; }
-        .section-alt { background: var(--surf); }x
-
-        .eyebrow {
-            font-size: 11px; font-weight: 600; color: var(--ac);
-            font-family: 'Space Grotesk', sans-serif;
-            letter-spacing: 0.1em; text-transform: uppercase;
-            display: block; margin-bottom: 10px;
-        }
-        .sec-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(28px, 4vw, 42px);
-            font-weight: 700; color: var(--tx);
-            line-height: 1.15; margin-bottom: 14px;
-        }
-        .sec-title span { color: var(--ac); }
-        .sec-title em   { font-style: italic; color: var(--ac); }
-        .sec-sub { font-size: 15px; color: var(--mt); line-height: 1.75; }
-
-        .btn-ac {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: var(--ac); color: #0D1B2A;
-            font-weight: 700; font-size: 14px;
-            padding: 11px 26px; border-radius: 10px; border: none;
-            text-decoration: none; transition: background .2s, transform .2s;
-        }
-        .btn-ac:hover { background: #00c8f0; color: #0D1B2A; transform: translateY(-1px); }
-
-        .btn-outline {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: transparent; color: var(--ac);
-            font-weight: 600; font-size: 14px;
-            padding: 11px 26px; border-radius: 10px;
-            border: 1.5px solid var(--ac-mid);
-            text-decoration: none; transition: all .2s;
-        }
-        .btn-outline:hover { background: var(--ac-dim); color: var(--ac); }
-
-        /* reveal */
-        .reveal { opacity: 0; transform: translateY(22px); transition: opacity .5s ease, transform .5s ease; }
-        .reveal.visible { opacity: 1; transform: translateY(0); }
-
-        /* ── HERO ── */
-        .about-hero {
-            background: var(--bg);
-            padding: 72px 0 64px;
-            position: relative; overflow: hidden;
-        }
-        .about-hero::before {
-            content: '';
-            position: absolute; inset: 0;
-            background-image:
-                linear-gradient(var(--border) 1px, transparent 1px),
-                linear-gradient(90deg, var(--border) 1px, transparent 1px);
-            background-size: 48px 48px;
-            opacity: 0.35;
-        }
-        .about-hero::after {
-            content: '';
-            position: absolute; top: 0; right: 0;
-            width: 500px; height: 100%;
-            background: radial-gradient(ellipse at right, rgba(0,180,216,0.07), transparent 70%);
-            pointer-events: none;
-        }
-        .about-hero .container { position: relative; z-index: 1; }
-
-        .breadcrumb-row {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 12px; color: var(--mt); margin-bottom: 24px;
-        }
-        .breadcrumb-row a { color: var(--ac); text-decoration: none; }
-
-        .hero-tag {
-            display: inline-flex; align-items: center; gap: 7px;
-            background: var(--ac-dim); border: 0.5px solid var(--ac-mid);
-            color: var(--ac); font-size: 12px; font-weight: 600;
-            font-family: 'Space Grotesk', sans-serif;
-            letter-spacing: 0.07em; text-transform: uppercase;
-            padding: 5px 14px; border-radius: 20px; margin-bottom: 20px;
-        }
-
-        /* hero right card */
-        .hero-card {
-            background: var(--card);
-            border: 0.5px solid var(--border);
-            border-radius: 20px; padding: 28px;
-            position: relative;
-        }
-        .hero-card::before {
-            content: '';
-            position: absolute; top: -1px; left: 28px; right: 28px; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--ac), transparent);
-            border-radius: 2px;
-        }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        .stat-box {
-            background: var(--surf); border: 0.5px solid var(--border);
-            border-radius: 10px; padding: 14px; text-align: center;
-        }
-        .stat-num {
-            font-family: 'Playfair Display', serif;
-            font-size: 28px; font-weight: 700; color: var(--ac); line-height: 1;
-        }
-        .stat-lbl { font-size: 11px; color: var(--mt); margin-top: 4px; }
-        .temp-row {
-            background: var(--surf); border: 0.5px solid var(--border);
-            border-radius: 10px; padding: 14px 16px;
-            display: flex; align-items: center; justify-content: space-between;
-        }
-        .temp-num { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700; color: var(--ac); line-height: 1; }
-        .temp-lbl { font-size: 11px; color: var(--mt); margin-top: 2px; }
-        .temp-live { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--success); font-weight: 500; }
-        .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
-        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
-
-        .float-badge {
-            position: absolute; 
-            bottom: -14px; 
-            right: 20px;
-            background: var(--warn); 
-            color: #0D1B2A;
-            font-size: 11px; 
-            font-weight: 700;
-            font-family: 'Space Grotesk', sans-serif;
-            padding: 7px 14px; 
-            border-radius: 20px;
-            box-shadow: 0 4px 16px rgba(255,214,10,0.25);
-        }
-
-        /* ── ABOUT PROJECT ── */
-        .project-card {
-            background: var(--card);
-            border: 0.5px solid var(--border);
-            border-radius: var(--radius); padding: 28px;
-            height: 100%;
-        }
-        .project-card .label {
-            font-size: 10px; 
-            font-weight: 600; 
-            color: var(--ac);
-            font-family: 'Space Grotesk', sans-serif;
-            letter-spacing: 0.1em;
-            text-transform: uppercase; 
-            margin-bottom: 14px;
-        }
-
-        .tech-pills { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 8px; 
-            margin-top: 14px; 
-        }
-
-        .tech-pill {
-            font-size: 11px; 
-            font-weight: 500;
-            font-family: 'Space Grotesk', sans-serif;
-            padding: 4px 12px; 
-            border-radius: 20px;
-            background: var(--ac-dim); 
-            border: 0.5px solid var(--ac-mid);
-            color: var(--ac);
-        }
-
-        /* developer card */
-        .dev-card {
-            background: var(--card);
-            border: 0.5px solid var(--border);
-            border-radius: var(--radius); padding: 28px;
-            display: flex; gap: 20px; align-items: flex-start;
-        }
-
-        .dev-avatar {
-            width: 64px; 
-            height: 64px; 
-            border-radius: 50%;
-            background: var(--ac-dim); 
-            border: 2px solid var(--ac);
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            font-size: 22px; 
-            font-weight: 700; 
-            color: var(--ac);
-            flex-shrink: 0; 
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        .dev-name { 
-            font-size: 18px; 
-            font-weight: 700; 
-            color: var(--tx); 
-            margin-bottom: 2px; 
-        }
-
-        .dev-role { 
-            font-size: 12px; 
-            color: var(--ac); 
-            font-family: 'Space Grotesk', sans-serif; 
-            font-weight: 600; 
-            margin-bottom: 10px; 
-        }
-
-        .dev-desc { 
-            font-size: 13px; 
-            color: var(--mt); 
-            line-height: 1.7; 
-        }
-
-        .dev-links { 
-            display: flex; 
-            gap: 10px; 
-            margin-top: 14px; 
-            flex-wrap: wrap; 
-        }
-
-        .dev-link {
-            display: inline-flex; 
-            align-items: center; 
-            gap: 6px;
-            font-size: 12px; 
-            font-weight: 500;
-            padding: 5px 14px;
-            border-radius: 8px;
-            border: 0.5px solid var(--border);
-            color: var(--mt); 
-            text-decoration: none;
-            transition: all .2s;
-        }
-
-        .dev-link:hover { 
-            background: var(--ac-dim);
-            color: var(--ac); 
-            border-color: var(--ac-mid); 
-        }
-
-        .dev-link i { 
-            color: var(--ac); 
-        }
-
-        /* ── VALUES ── */
-        .value-card {
-            background: var(--card); 
-            border: 0.5px solid var(--border);
-            border-radius: var(--radius); 
-            padding: 24px 20px; 
-            height: 100%;
-            transition: border-color .2s, transform .2s;
-        }
-
-        .value-card:hover { 
-            border-color: var(--ac-mid); 
-            transform: translateY(-3px); 
-        }
-
-        .value-icon {
-            width: 46px; 
-            height: 46px; 
-            border-radius: 12px;
-            background: var(--ac-dim); 
-            border: 0.5px solid var(--ac-mid);
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            color: var(--ac); 
-            font-size: 19px; 
-            margin-bottom: 14px;
-        }
-
-        .value-title { 
-            font-size: 15px; 
-            font-weight: 600; 
-            color: var(--tx); 
-            margin-bottom: 7px; 
-        }
-
-        .value-desc  { 
-            font-size: 13px; 
-            color: var(--mt); 
-            line-height: 1.7; 
-        }
-
-        /* ── TIMELINE ── */
-        .timeline { 
-            position: relative; 
-            padding-left: 30px; 
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute; 
-            left: 8px; 
-            top: 6px; 
-            bottom: 6px;
-            width: 1.5px;
-            background: linear-gradient(to bottom, var(--ac), transparent);
-        }
-
-        .tl-item { 
-            position: relative; 
-            margin-bottom: 32px; 
-        }
-
-        .tl-item:last-child { 
-            margin-bottom: 0; 
-        }
-
-        .tl-dot {
-            position: absolute; 
-            left: -26px; 
-            top: 4px;
-            width: 14px; 
-            height: 14px; 
-            border-radius: 50%;
-            background: var(--ac-dim); 
-            border: 2px solid var(--ac);
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-        }
-
-        .tl-dot::after { 
-            content:''; 
-            width:4px; 
-            height:4px; 
-            border-radius:50%; 
-            background:var(--ac); 
-        }
-
-        .tl-year  { 
-            font-size: 11px; 
-            font-weight: 700; 
-            color: var(--ac); 
-            font-family: 'Space Grotesk', sans-serif; 
-            letter-spacing: 0.08em; 
-            margin-bottom: 3px; 
-        }
-
-        .tl-title { 
-            font-size: 14px; 
-            font-weight: 600; 
-            color: var(--tx); 
-            margin-bottom: 3px; 
-        }
-
-        .tl-desc  { 
-            font-size: 13px; 
-            color: var(--mt); 
-            line-height: 1.6; 
-        }
-
-        /* ── CERTIFICATIONS ── */
-        .cert-card {
-            background: var(--card); 
-            border: 0.5px solid var(--border);
-            border-radius: var(--radius); 
-            padding: 18px;
-            display: flex; 
-            align-items: center; 
-            gap: 14px;
-            transition: border-color .2s;
-        }
-
-        .cert-card:hover { 
-            border-color: var(--ac-mid); 
-        }
-
-        .cert-icon {
-            width: 42px; 
-            height: 42px; 
-            border-radius: 10px;
-            background: var(--ac-dim); 
-            border: 0.5px solid var(--ac-mid);
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            color: var(--ac); 
-            font-size: 17px; 
-            flex-shrink: 0;
-        }
-
-        .cert-name { 
-            font-size: 13px; 
-            font-weight: 600; 
-            color: var(--tx); 
-            margin-bottom: 2px; 
-        }
-
-        .cert-body { 
-            font-size: 11px; 
-            color: var(--mt); 
-            line-height: 1.5; 
-        }
-
-        /* ── CTA ── */
-        .cta-banner {
-            background: linear-gradient(135deg, var(--surf) 0%, #0a2236 100%);
-            border: 0.5px solid var(--border);
-            border-radius: 20px; 
-            padding: 52px 40px;
-            position: relative; 
-            overflow: hidden; 
-            text-align: center;
-        }
-
-        .cta-banner::before {
-            content: '';
-            position: absolute; top: -60px; left: 50%; 
-            transform: translateX(-50%);
-            width: 400px; height: 200px;
-            background: radial-gradient(ellipse, rgba(0,180,216,0.08), transparent 70%);
-            pointer-events: none;
-        }
-
-        /* ── FOOTER ── */
-        footer {
-            background: #060E17;
-            border-top: 0.5px solid var(--border);
-            padding: 56px 0 28px;
-        }
-
-        .footer-logo-text {
-            font-family: 'Playfair Display', serif;
-            font-size: 20px; 
-            font-weight: 700; 
-            color: var(--ac); 
-            margin-bottom: 4px;
-        }
-
-        .footer-logo-sub { 
-            font-size: 11px; 
-            color: var(--mt); 
-            letter-spacing: 0.1em; 
-            text-transform: uppercase; 
-            margin-bottom: 16px; 
-        }
-
-        .footer-desc { 
-            font-size: 13px; 
-            color: var(--mt); 
-            max-width: 260px; 
-            line-height: 1.7; 
-            margin-bottom: 20px; 
-        }
-
-        .footer-social { 
-            display: flex; 
-            gap: 10px; 
-        }
-        
-        .social-btn {
-            width: 36px; 
-            height: 36px; 
-            border-radius: 8px;
-            background: var(--card); 
-            border: 0.5px solid var(--border);
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            color: var(--mt); 
-            font-size: 14px; 
-            text-decoration: none;
-            transition: all .2s;
-        }
-
-        .social-btn:hover { 
-            background: var(--ac-dim); 
-            color: var(--ac); 
-            border-color: var(--ac-mid); 
-        }
-
-        .footer-heading { 
-            font-size: 13px; 
-            font-weight: 600; 
-            color: var(--tx); 
-            margin-bottom: 16px; 
-            font-family: 'Space Grotesk', sans-serif; 
-            letter-spacing: 0.05em; 
-        }
-
-        .footer-links { 
-            list-style: none; 
-            padding: 0; 
-            margin: 0; 
-        }
-
-        .footer-links li { 
-            margin-bottom: 10px; 
-        }
-
-        .footer-links a { 
-            font-size: 13px; 
-            color: var(--mt); 
-            text-decoration: none; 
-            transition: color .2s; 
-            display: flex; 
-            align-items: center; 
-            gap: 6px; 
-        }
-
-        .footer-links a:hover { 
-            color: var(--ac); 
-        }
-
-        .footer-links a i { 
-            font-size: 10px; 
-            color: var(--ac); 
-        }
-
-        .footer-contact-item { 
-            display: flex; 
-            gap: 10px; 
-            margin-bottom: 12px; 
-            font-size: 13px; 
-            color: var(--mt); 
-        }
-
-        .footer-contact-item i { 
-            color: var(--ac); 
-            margin-top: 2px; 
-            flex-shrink: 0; 
-        }
-
-        .footer-bottom {
-            border-top: 0.5px solid var(--border);
-            margin-top: 40px; padding-top: 20px;
-            display: flex; justify-content: space-between;
-            align-items: center; flex-wrap: gap;
-            font-size: 12px; color: var(--mt);
-        }
-        .footer-bottom a { 
-            color: var(--mt); 
-            text-decoration: none; 
-        }
-
-        .footer-bottom a:hover { 
-            color: var(--ac); 
-        }
-
-
-        /* portfolio disclaimer */
-        .portfolio-bar {
-            background: var(--ac-dim); border-top: 0.5px solid var(--ac-mid);
-            padding: 10px 0; text-align: center;
-            font-size: 12px; color: var(--ac);
-            font-family: 'Space Grotesk', sans-serif;
-        }
-        .portfolio-bar a { color: var(--ac); font-weight: 600; }
-
-        /* back to top */
-        #backToTop {
-            position: fixed; bottom: 28px; right: 28px;
-            width: 42px; height: 42px; border-radius: 50%;
-            background: var(--ac); color: #0D1B2A;
-            display: none; align-items: center; justify-content: center;
-            font-size: 16px; cursor: pointer; z-index: 999;
-            border: none; box-shadow: 0 4px 16px rgba(0,180,216,0.3);
-            transition: all .2s;
-        }
-        #backToTop:hover { background: #00c8f0; transform: translateY(-2px); }
-        #backToTop.show { display: flex; }
-
-        /* ── Responsive ── */
-        @media (max-width: 991px) {
-            section { padding: 56px 0; }
-            .about-hero { padding: 52px 0 44px; }
-            .hero-card { margin-top: 40px; }
-            .dev-card { flex-direction: column; }
-            .cta-banner { padding: 36px 24px; }
-        }
-        @media (max-width: 575px) {
-            .sec-title { font-size: 26px; }
-            .stat-grid { grid-template-columns: 1fr 1fr; }
-            .footer-bottom { flex-direction: column; text-align: center; }
+        .dropdown-item:hover,.dropdown-item:focus{background:rgba(0,180,216,0.08)!important;color:#E8F5E9!important;}
+        .logout-item:hover,.logout-item:focus{background:rgba(255,107,107,0.08)!important;color:#FF6B6B!important;}
+        .navbar-nav .nav-link.active{color:#00B4D8!important;font-weight:600!important;}
+        @media(max-width:991px){
+            .navbar-nav .nav-link{padding:10px 16px!important;border-bottom:0.5px solid rgba(0,180,216,0.08);}
+            #navbarCollapse{background:#122234;padding:8px 0;border-top:0.5px solid rgba(0,180,216,0.14);}
         }
     </style>
-</head>
-<body>
+    <nav class="navbar navbar-expand-lg sticky-top p-0"
+         style="background:#122234;border-bottom:0.5px solid rgba(0,180,216,0.14);">
 
-<div id="navbar-placeholder"></div>
-
-<!-- Hero -->
-<div class="about-hero">
-    <div class="container">
-        <div class="breadcrumb-row">
-            <a href="index.html">Home</a>
-            <i class="fa fa-chevron-right" style="font-size:9px;"></i>
-            <span>About</span>
-        </div>
-        <div class="row align-items-center g-5">
-            <div class="col-lg-6 reveal">
-                <div class="hero-tag"><i class="fa fa-seedling"></i> Personal Project</div>
-                <h1 class="sec-title">
-                    Built with Purpose,<br>
-                    Powered by <em>Code</em>
-                </h1>
-                <p class="sec-sub mb-4">
-                    Fresh & Organic Cold Storage is a full-featured e-commerce web application — designed, developed and deployed by <strong style="color:var(--tx);">Sujal Maru</strong> as a personal portfolio project to demonstrate real-world web development skills.
-                </p>
-                <div class="d-flex gap-3 flex-wrap">
-                    <a href="products.html" class="btn-ac"><i class="fas fa-magnifying-glass"></i> Explore Products</a>
-                    <a href="contact.html" class="btn-outline"><i class="fa fa-envelope"></i> Get in Touch</a>
+        <!-- Brand -->
+        <a href="index.html" class="navbar-brand d-flex align-items-center px-4 px-lg-4">
+            <div style="width:36px;height:36px;background:rgba(0,180,216,0.12);border-radius:8px;
+                        display:flex;align-items:center;justify-content:center;
+                        color:#00B4D8;font-size:16px;margin-right:10px;flex-shrink:0;">
+                <i class="fa fa-seedling"></i>
+            </div>
+            <div>
+                <div style="font-size:17px;font-weight:700;color:#00B4D8;
+                            font-family:'Inter',sans-serif;line-height:1.1;">
+                    Fresh &amp; Organic
+                </div>
+                <div style="font-size:9px;color:#8FAABF;letter-spacing:0.14em;
+                            text-transform:uppercase;font-family:'Inter',sans-serif;">
+                    COLD STORAGE
                 </div>
             </div>
-            <div class="col-lg-6 reveal">
-                <div class="hero-card">
-                    <div class="stat-grid">
-                        <div class="stat-box">
-                            <div class="stat-num">10+</div>
-                            <div class="stat-lbl">Pages Built</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-num">32+</div>
-                            <div class="stat-lbl">Products</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-num">100%</div>
-                            <div class="stat-lbl">Responsive</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-num">Firebase</div>
-                            <div class="stat-lbl">Powered</div>
-                        </div>
-                    </div>
-                    <div class="temp-row">
-                        <div>
-                            <div class="temp-num">2°C</div>
-                            <div class="temp-lbl">Simulated Cold Storage</div>
-                        </div>
-                        <div class="temp-live">
-                            <div class="live-dot"></div> Live Demo
-                        </div>
-                    </div>
-                    <div class="float-badge">🚀 Portfolio Project — 2026</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+        </a>
 
-<!-- DEVELOPER — SUJAL MARU -->
-<section class="section-alt">
-    <div class="container">
-        <div class="row g-5 align-items-center">
-            <div class="col-lg-5 reveal">
-                <span class="eyebrow">The Developer</span>
-                <h2 class="sec-title">Hi, I'm <span>Sujal Maru</span></h2>
-                <p class="sec-sub mb-3">
-                    A passionate web developer from Pune, Maharashtra — focused on building clean, functional and visually strong full-stack web applications.
-                </p>
-                <p style="font-size:14px;color:var(--mt);line-height:1.75;">
-                    I built Fresh & Organic Cold Storage from scratch — the idea, the UI design, the database structure, the Firebase integration, and every line of code. It's a project that combines my interest in clean UI design with real backend functionality.
-                </p>
-                <p style="font-size:14px;color:var(--mt);line-height:1.75;margin-top:12px;">
-                    This project demonstrates my ability to plan, design and build a complete product — not just a template. Every page, every feature, every interaction was a deliberate decision.
-                </p>
+        <!-- Hamburger -->
+        <button type="button" class="navbar-toggler me-4" style="border-color:rgba(0,180,216,0.3);"
+                data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon" style="filter:invert(1);"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <!-- Nav links — centered, no extra gap -->
+            <div class="navbar-nav mx-auto p-4 p-lg-0" style="gap:0;">
+                ${navLinks}
             </div>
-            <div class="col-lg-7 reveal">
-                <div class="dev-card">
-                    <div class="dev-avatar">SM</div>
-                    <div>
-                        <div class="dev-name">Sujal Maru</div>
-                        <div class="dev-role">Full Stack Web Developer</div>
-                        <div class="dev-desc">
-                            Based in Pune, Maharashtra. Specialising in HTML, CSS, Bootstrap, JavaScript, Firebase, Java, JSP/Servlets, JDBC and MySQL. Building projects that solve real problems with clean code and thoughtful design.
-                        </div>
-                        <div class="dev-links">
-                            <a href="https://github.com/Sujal-0803" class="dev-link"><i class="fab fa-github"></i> GitHub</a>
-                            <a href="https://www.linkedin.com/in/sujalmaru0803" class="dev-link"><i class="fab fa-linkedin"></i> LinkedIn</a>
-                            <a href="#" class="dev-link"><i class="fa fa-globe"></i> Portfolio</a>
-                            <a href="contact.html" class="dev-link"><i class="fa fa-envelope"></i> Contact</a>
-                        </div>
+
+            <!-- Right side actions -->
+            <div class="d-flex align-items-center pe-4 gap-2">
+
+                <!-- Search toggle -->
+                <div class="position-relative" id="searchWrapper">
+                    <button onclick="toggleSearch();" type="button" aria-label="Search"
+                            style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);
+                                   border:0.5px solid rgba(0,180,216,0.2);color:#8FAABF;
+                                   display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                        <i class="fa fa-search" style="font-size:14px;"></i>
+                    </button>
+                    <div id="searchBox" class="search-box" style="display:none;position:absolute;
+                         top:calc(100% + 10px);right:0;width:280px;
+                         background:#122234;border:0.5px solid rgba(0,180,216,0.2);
+                         border-radius:12px;padding:10px;z-index:1000;
+                         box-shadow:0 4px 24px rgba(0,0,0,0.3);">
+                        <input type="text" id="searchInput"
+                               style="width:100%;background:#1A2F42;border:0.5px solid rgba(0,180,216,0.2);
+                                      border-radius:8px;padding:8px 12px;font-size:13px;
+                                      color:#E8F5E9;outline:none;font-family:'Inter',sans-serif;"
+                               placeholder="Search products..."
+                               oninput="window._navHandleSearch(this.value)"
+                               onkeydown="if(event.key==='Escape'){toggleSearch();}
+                                          if(event.key==='Enter'&&this.value.trim()){
+                                              window.location.href='products.html?q='+encodeURIComponent(this.value.trim());
+                                          }">
                     </div>
                 </div>
 
-                <!-- Tech stack -->
-                <div class="project-card mt-3">
-                    <div class="label">Tech Stack Used in This Project</div>
-                    <div class="tech-pills">
-                        <span class="tech-pill">HTML5</span>
-                        <span class="tech-pill">CSS3</span>
-                        <span class="tech-pill">Bootstrap 5</span>
-                        <span class="tech-pill">JavaScript ES6</span>
-                        <span class="tech-pill">Firebase Auth</span>
-                        <span class="tech-pill">Firestore</span>
-                        <span class="tech-pill">Responsive Design</span>
-                        <span class="tech-pill">LocalStorage</span>
-                    </div>
-                </div>
+                <!-- Cart -->
+                <button onclick="if(window.requireLogin('view your cart')) window.location.href='cart.html';"
+                        style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);
+                               border:0.5px solid rgba(0,180,216,0.2);color:#8FAABF;
+                               display:flex;align-items:center;justify-content:center;
+                               cursor:pointer;position:relative;"
+                        aria-label="View cart">
+                    <i class="fa fa-shopping-cart" style="font-size:15px;"></i>
+                    <span class="cart-count-badge"
+                          style="position:absolute;top:-5px;right:-5px;background:#e53935;color:#fff;
+                                 width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;
+                                 display:flex;align-items:center;justify-content:center;line-height:1;">0</span>
+                </button>
+
+                ${userSection}
             </div>
         </div>
-    </div>
-</section>
+    </nav>`;
+}
 
-<!-- ABOUT PROJECT -->
-<section>
-    <div class="container">
-        <div class="row g-5 align-items-center">
-            <div class="col-lg-6 reveal">
-                <span class="eyebrow">Project Journey</span>
-                <h2 class="sec-title">How This <span>Project Grew</span></h2>
-                <p class="sec-sub mb-4">
-                    What started as a simple product listing page became a full e-commerce system — complete with authentication, cart, orders and live status tracking.
-                </p>
-                <a href="products.html" class="btn-ac"><i class="fa fa-eye"></i> See It in Action</a>
-            </div>
-            <div class="col-lg-6 reveal">
-                <div class="timeline">
-                    <div class="tl-item">
-                        <div class="tl-dot"></div>
-                        <div class="tl-year">PHASE 01</div>
-                        <div class="tl-title">Concept & Design</div>
-                        <div class="tl-desc">Planned the site structure, color palette, dark theme, and page layout before writing a single line of code.</div>
-                    </div>
-                    <div class="tl-item">
-                        <div class="tl-dot"></div>
-                        <div class="tl-year">PHASE 02</div>
-                        <div class="tl-title">Core Pages Built</div>
-                        <div class="tl-desc">Built index.html, products.html and product.html with responsive Bootstrap 5 grid and dark theme CSS.</div>
-                    </div>
-                    <div class="tl-item">
-                        <div class="tl-dot"></div>
-                        <div class="tl-year">PHASE 03</div>
-                        <div class="tl-title">Firebase Integration</div>
-                        <div class="tl-desc">Added Firebase Auth for login/register, Firestore for products, orders, cart and reviews.</div>
-                    </div>
-                    <div class="tl-item">
-                        <div class="tl-dot"></div>
-                        <div class="tl-year">PHASE 04</div>
-                        <div class="tl-title">Order System</div>
-                        <div class="tl-desc">Built a Flipkart-style order tracker with live status updates — pending → confirmed → packed → delivered.</div>
-                    </div>
-                    <div class="tl-item">
-                        <div class="tl-dot"></div>
-                        <div class="tl-year">PHASE 05</div>
-                        <div class="tl-title">Complete & Portfolio Ready</div>
-                        <div class="tl-desc">10+ pages, fully responsive, Firebase-powered — deployed as a portfolio project showcasing full-stack frontend skills.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+/* ── inject navbar & watch auth ── */
+const currentPage = window.location.pathname.split("/").pop() || "index.html";
 
-<!-- WHAT PROJECT COVERS -->
-<section class="section-alt">
-    <div class="container">
-        <div class="text-center mb-5 reveal">
-            <span class="eyebrow">Features Built</span>
-            <h2 class="sec-title">What This Project <span>Demonstrates</span></h2>
-            <p class="sec-sub mx-auto">Every feature was built from scratch — no templates, no page builders.</p>
-        </div>
-        <div class="row g-4">
-            <div class="col-6 col-lg-3 reveal">
-                <div class="value-card">
-                    <div class="value-icon"><i class="fa fa-lock"></i></div>
-                    <div class="value-title">Firebase Auth</div>
-                    <div class="value-desc">Login, register, logout and protected pages — all handled with Firebase Authentication.</div>
-                </div>
-            </div>
-            <div class="col-6 col-lg-3 reveal">
-                <div class="value-card">
-                    <div class="value-icon"><i class="fa fa-database"></i></div>
-                    <div class="value-title">Firestore Database</div>
-                    <div class="value-desc">Products, orders, cart and reviews stored and fetched in real time from Cloud Firestore.</div>
-                </div>
-            </div>
-            <div class="col-6 col-lg-3 reveal">
-                <div class="value-card">
-                    <div class="value-icon"><i class="fa fa-box"></i></div>
-                    <div class="value-title">Order Tracking</div>
-                    <div class="value-desc">Flipkart-style order status tracker with live updates — customers see status change in real time.</div>
-                </div>
-            </div>
-            <div class="col-6 col-lg-3 reveal">
-                <div class="value-card">
-                    <div class="value-icon"><i class="fa fa-mobile-alt"></i></div>
-                    <div class="value-title">Fully Responsive</div>
-                    <div class="value-desc">Every page works perfectly on mobile, tablet and desktop using Bootstrap 5 responsive grid.</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+/* ── Instant navbar using cached auth state ── */
+document.addEventListener("DOMContentLoaded", () => {
+    const ph = document.getElementById("navbar-placeholder");
+    if (!ph || ph.innerHTML.trim()) return;
 
-<!-- Certifications / Disclaimer -->
-<section>
-    <div class="container">
-        <div class="row g-5 align-items-center">
-            <div class="col-lg-5 reveal">
-                <span class="eyebrow">Project Note</span>
-                <h2 class="sec-title">Simulated <span>Business Concept</span></h2>
-                <p class="sec-sub">
-                    The cold storage business, products, prices and customer reviews on this site are fictional — created purely to demonstrate a realistic e-commerce experience. All technical features including authentication, cart and order management are fully functional.
-                </p>
-            </div>
-            <div class="col-lg-7 reveal">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="cert-card">
-                            <div class="cert-icon"><i class="fa fa-code"></i></div>
-                            <div>
-                                <div class="cert-name">100% Custom Code</div>
-                                <div class="cert-body">No templates or page builders — every component hand-coded from scratch</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="cert-card">
-                            <div class="cert-icon"><i class="fa fa-fire"></i></div>
-                            <div>
-                                <div class="cert-name">Firebase Powered</div>
-                                <div class="cert-body">Real authentication and Firestore database — not mocked or faked</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="cert-card">
-                            <div class="cert-icon"><i class="fa fa-mobile-alt"></i></div>
-                            <div>
-                                <div class="cert-name">Mobile First</div>
-                                <div class="cert-body">Designed and tested for all screen sizes — mobile, tablet, desktop</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="cert-card">
-                            <div class="cert-icon"><i class="fa fa-user-shield"></i></div>
-                            <div>
-                                <div class="cert-name">Auth Protected</div>
-                                <div class="cert-body">Cart, checkout, orders and profile are protected — login required</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    /* read cached user from localStorage */
+    const cached = localStorage.getItem("__navUser");
+    if (cached) {
+        try {
+            const u = JSON.parse(cached);
+            ph.innerHTML = buildNavbar(u);
+            syncCartCount(true);
+        } catch(e) {
+            ph.innerHTML = buildNavbar(null);
+            syncCartCount(false);
+        }
+    } else {
+        ph.innerHTML = buildNavbar(null);
+        syncCartCount(false);
+    }
+});
 
-<!-- CTA -->
-<section class="section-alt">
-    <div class="container">
-        <div class="cta-banner reveal">
-            <span class="eyebrow" style="display:block;margin-bottom:10px;">Want to Collaborate?</span>
-            <h2 class="sec-title" style="font-size:clamp(24px,3vw,36px);">Let's Build Something <span>Together</span></h2>
-            <p class="sec-sub mx-auto" style="margin-bottom:28px;">
-                If you're interested in my work, want to hire me, or just want to talk about web development — I'd love to connect.
-            </p>
-            <div class="d-flex gap-3 justify-content-center flex-wrap">
-                <a href="contact.html" class="btn-ac"><i class="fa fa-envelope"></i> Contact Me</a>
-                <a href="products.html" class="btn-outline"><i class="fa fa-eye"></i> View the Project</a>
-            </div>
-        </div>
-    </div>
-</section>
+onAuthStateChanged(auth, user => {
+    window.__firebaseUser = user || null;
 
-<!-- Footer -->
-<footer>
-    <div class="container">
-        <div class="row g-5">
-            <!-- Brand -->
-            <div class="col-lg-4">
-                <div class="footer-logo-text">🌿 Fresh & Organic</div>
-                <div class="footer-logo-sub">Cold Storage</div>
-                <p class="footer-desc">Premium cold storage for organic fruits, vegetables and fresh produce. Farm-fresh, pesticide-free, delivered to your door.</p>
-                <div class="footer-social">
-                    <a href="https://github.com/Sujal-0803" class="social-btn"><i class="fab fa-github"></i></a>
-                    <a href="https://www.linkedin.com/in/sujalmaru0803" class="social-btn"><i class="fab fa-linkedin"></i></a>
-                    <a href="https://www.instagram.com/sujalll._24" class="social-btn"><i class="fab fa-instagram"></i></a>
-                    <a href="https://wa.me/7972891795" class="social-btn"><i class="fab fa-whatsapp"></i></a>
-                </div>
-            </div>
+    if (!user && FULLY_PROTECTED_PAGES.includes(currentPage)) {
+        sessionStorage.setItem("loginRedirectFrom", window.location.href);
+        window.location.href = "login.html";
+        return;
+    }
 
-            <!-- Quick Links -->
-            <div class="col-6 col-lg-2">
-                <div class="footer-heading">Quick Links</div>
-                <ul class="footer-links">
-                    <li><a href="index.html"><i class="fa fa-chevron-right"></i> Home</a></li>
-                    <li><a href="about.html"><i class="fa fa-chevron-right"></i> About Us</a></li>
-                    <li><a href="products.html"><i class="fa fa-chevron-right"></i> Products</a></li>
-                    <li><a href="feature.html"><i class="fa fa-chevron-right"></i> Features</a></li>
-                    <li><a href="testimonial.html"><i class="fa fa-chevron-right"></i> Testimonials</a></li>
-                </ul>
-            </div>
+    /* cache user for instant navbar on next load */
+    if (user) {
+        localStorage.setItem("__navUser", JSON.stringify({
+            displayName: user.displayName || '',
+            email:       user.email || ''
+        }));
+    } else {
+        localStorage.removeItem("__navUser");
+    }
 
-            <!-- My Account -->
-            <div class="col-6 col-lg-2">
-                <div class="footer-heading">My Account</div>
-                <ul class="footer-links">
-                    <li><a href="login.html"><i class="fa fa-chevron-right"></i> Login</a></li>
-                    <li><a href="register.html"><i class="fa fa-chevron-right"></i> Register</a></li>
-                    <li><a href="profile.html"><i class="fa fa-chevron-right"></i> My Profile</a></li>
-                    <li><a href="orders.html"><i class="fa fa-chevron-right"></i> My Orders</a></li>
-                    <li><a href="cart.html"><i class="fa fa-chevron-right"></i> My Cart</a></li>
-                </ul>
-            </div>
+    const placeholder = document.getElementById("navbar-placeholder");
+    if (placeholder) {
+        placeholder.innerHTML = buildNavbar(user);
+        syncCartCount(!!user);
 
-            <!-- Contact -->
-            <div class="col-lg-4">
-                <div class="footer-heading">Contact Us</div>
-                <div class="footer-contact-item">
-                    <i class="fa fa-map-marker-alt"></i>
-                    <span>Pune, Maharashtra, India</span>
-                </div>
-                <div class="footer-contact-item">
-                    <i class="fa fa-phone"></i>
-                    <span>+91 79728 91795</span>
-                </div>
-                <div class="footer-contact-item">
-                    <i class="fa fa-envelope"></i>
-                    <span>sujalmaru2004@gmail.com</span>
-                </div>
-                <div class="footer-contact-item">
-                    <i class="fa fa-clock"></i>
-                    <span>Mon – Sat: 9:00 AM – 6:00 PM</span>
-                </div>
-            </div>
-        </div>
+        /* Nav link active + hover colors */
+        placeholder.querySelectorAll(".nav-link").forEach(a => {
+            a.style.color = a.classList.contains("active") ? "#00B4D8" : "#8FAABF";
+            a.addEventListener("mouseenter", () => { if (!a.classList.contains("active")) a.style.color = "#00B4D8"; });
+            a.addEventListener("mouseleave", () => { if (!a.classList.contains("active")) a.style.color = "#8FAABF"; });
+        });
 
-        <div class="footer-bottom">
-            <span>© 2026 Fresh &amp; Organic Cold Storage — Personal Portfolio Project by <strong style="color:var(--ac);">Sujal Maru</strong></span>
-            <span>
-                <a href="#">Privacy Policy</a> &nbsp;·&nbsp;
-                <a href="#">Terms of Service</a>
-            </span>
-        </div>
-    </div>
-</footer>
+        /* Pick up ?q= from URL if on products.html */
+        if (currentPage === "products.html") {
+            const params = new URLSearchParams(window.location.search);
+            const q = params.get("q");
+            if (q) {
+                const input = document.getElementById("searchInput");
+                if (input) input.value = q;
+                const box = document.getElementById("searchBox");
+                if (box) box.style.display = "block";
+                setTimeout(() => {
+                    if (typeof window.handleSearch === "function") window.handleSearch(q);
+                }, 50);
+            }
+        }
+    }
+});
 
+/* ── close search box on outside click ── */
+document.addEventListener("click", e => {
+    const box     = document.getElementById("searchBox");
+    const wrapper = document.getElementById("searchWrapper");
+    if (box && box.style.display === "block" && !wrapper?.contains(e.target)) {
+        box.style.display = "none";
+    }
+});
 
-<!-- Portfolio disclaimer bar -->
-<div class="portfolio-bar">
-    ⚡ Personal portfolio project — Built by <a href="contact.html">Sujal Maru</a>, Pune
-</div>
-
-<button id="backToTop" aria-label="Back to top"><i class="fa fa-arrow-up"></i></button>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script type="module" src="js/navbar.js"></script>
-<script>
-    const btn = document.getElementById('backToTop');
-    window.addEventListener('scroll', () => btn.classList.toggle('show', window.scrollY > 400));
-    btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-</script>
-</body>
-</html>
+export { auth, app };
