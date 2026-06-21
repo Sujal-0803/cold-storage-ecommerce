@@ -43,7 +43,13 @@ function syncCartCount(loggedIn) {
 
 /* ── logout ── */
 window.doLogout = function () {
-    signOut(auth).then(() => { window.location.href = "login.html"; });
+    signOut(auth).then(() => {
+        localStorage.removeItem("cart");
+        localStorage.removeItem("couponDiscount");
+        localStorage.removeItem("productDiscount");
+        localStorage.removeItem("checkoutTotal");
+        window.location.href = "login.html";
+    });
 };
 
 /* ── toggle search box ── */
