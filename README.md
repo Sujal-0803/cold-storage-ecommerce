@@ -120,14 +120,15 @@ http://localhost:5500
 
 ---
 
-## 🙋 About the Developer
+## 👨‍💻 Developer
 
-Built by **Sujal Maru** — a fresher developer based in Pune, Maharashtra, as a personal portfolio project to practice full-stack-feeling web development using Firebase as a backend-as-a-service.
+ **Sujal Maru**
 
-- 🔗 GitHub: [Sujal-0803](https://github.com/Sujal-0803)
-- 💼 LinkedIn: [sujalmaru0803](https://www.linkedin.com/in/sujalmaru0803)
-- 📧 Email: sujalmaru2004@gmail.com
+Passionate Java Full Stack Developer focused on building practical web applications and continuously learning new technologies.
 
+- 📧 dev.sujalmaru@gmail.com
+- 📞 +91 79728 91795
+- 📍 Pune, Maharashtra, India
 ---
 
 ## 📄 License
